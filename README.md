@@ -1,9 +1,5 @@
 # startup
 
-Hello! This is me editing the readme for step 4.
+## Initial Notes
 
-...And this is me editing the readme from github for step 6.
-
-This is me editing it for step 8!
-
-Just kidding, that was for step 7. This is step 8 on github.
+Doing all that pushing and pulling on github really helped me solidify what it actually means to "commit" something. I've used Github in the past but I've never really dived deep into what it meant before doing this Github activity. I think it's definitely a better idea than periodically saving code in a google doc!

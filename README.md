@@ -1,10 +1,8 @@
-# coolPoker
+# CoolPoker
 
-Pitch Paragraph:
+Have you ever wanted to play a quick round of poker but didn't want to risk any money? Introducing the CoolPoker app! Here, you can quickly create a game of Heads Up No Limit Texas Hold'em to play with a friend online in real-time. The game settings are fully customizable, so you can play however you like whenever you like.  With the login feature, you can also save previous games and settings, so you can easily pick up where you left off!
 
-Have you ever wanted to play a quick round of poker but don't want to risk any money? Introducing the coolPoker app! Here, you can quickly create a game of Heads Up No Limit Texas Hold'em to play with a friend online in real-time. The game settings are fully customizable, so you can play however you like whenever you like.  With the login feature, you can also save previous games and settings, so you can easily pick up where you left off!
-
-[myimage](startUpSpec/pagemockup.png)
+![myimage](startUpSpec/pagemockup.png)
 
 Key features
 
@@ -14,6 +12,6 @@ Key features
 - Game actions are displayed to the other player in real time
 - Games can be saved to be played at a later date
 - Previous games can be accessed through the user profile page
-- user profile page has various statistics, such as games played and money won
-- games can be shared with a URL
+- User profile page has various statistics, such as games played and money won
+- Games can be shared with a URL
 

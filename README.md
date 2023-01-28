@@ -1,7 +1,19 @@
-# startup
+# coolPoker
 
-## Initial Notes
+Pitch Paragraph:
 
-Doing all that pushing and pulling on github really helped me solidify what it actually means to "commit" something. I've used Github in the past but I've never really dived deep into what it meant before doing this Github activity. I think it's definitely a better idea than periodically saving code in a google doc!
+Have you ever wanted to play a quick round of poker but don't want to risk any money? Introducing the coolPoker app! Here, you can quickly create a game of Heads Up No Limit Texas Hold'em to play with a friend online in real-time. The game settings are fully customizable, so you can play however you like whenever you like.  With the login feature, you can also save previous games and settings, so you can easily pick up where you left off!
 
-https://ninjamock.com/Designer/Workplace/181293478/NewPage
+[myimage](startUpSpec/pagemockup.png)
+
+Key features
+
+- Logging in and registering over HTTPS
+- Game creation page to create a new game with a variety of settings
+- Game states are saved persistently
+- Game actions are displayed to the other player in real time
+- Games can be saved to be played at a later date
+- Previous games can be accessed through the user profile page
+- user profile page has various statistics, such as games played and money won
+- games can be shared with a URL
+

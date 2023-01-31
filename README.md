@@ -15,3 +15,6 @@ Key features
 - User profile page has various statistics, such as games played and money won
 - Games can be shared with a URL
 
+Notes for future me:
+- IP address is http://18.216.28.197/
+- remember to shut down both the instance AND the elastic IP address (they are separate)

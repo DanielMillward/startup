@@ -20,11 +20,6 @@ Key features
 
 I am once again impressed by how easiy it is to put files with a Caddy backend and have it deploy. Something I didn't notice before was that there is a specific element for superscript text, the \<sup\> tag. I also learned that you can put SVG's in buttons, which in retrospect makes sense since I knew that putting regular images in a button was possible. Finally, I learned that you can put foreign characters directly into the HTML document without it breaking.
 
-
-## Simon HTML - Notes
-
-I am once again impressed by how easiy it is to put files with a Caddy backend and have it deploy. Something I didn't notice before was that there is a specific element for superscript text, the \<sup\> tag. I also learned that you can put SVG's in buttons, which in retrospect makes sense since I knew that putting regular images in a button was possible. Finally, I learned that you can put foreign characters directly into the HTML document without it breaking.
-
 Notes for future me:
 - IP address is http://18.216.28.197/
 - remember to shut down both the instance AND the elastic IP address (they are separate)

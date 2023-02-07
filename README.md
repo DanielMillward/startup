@@ -15,3 +15,8 @@ Key features
 - User profile page has various statistics, such as games played and money won
 - Games can be shared with a URL
 
+
+## Simon HTML - Notes
+
+I am once again impressed by how easiy it is to put files with a Caddy backend and have it deploy. Something I didn't notice before was that there is a specific element for superscript text, the \<sup\> tag. I also learned that you can put SVG's in buttons, which in retrospect makes sense since I knew that putting regular images in a button was possible. Finally, I learned that you can put foreign characters directly into the HTML document without it breaking.
+

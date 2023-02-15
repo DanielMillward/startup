@@ -31,3 +31,22 @@ Some CSS notes:
 - em is multiples of the width of the letter m in the parent's font
 - rem is the same, but for the root font
 - you can put self-hosted fonts directly in css with @font-face, or impor tthem with @import url().
+
+### Display options:
+- none - not visibile
+- block - parent width
+- inline - content width
+- flex - display children flexibly
+	- display: flex;
+	- flex-direction: row;
+	- Then in children, put
+	- `flex: 0 80px`
+		- 0/1 means will grow/not grow, 80px is the starting growth. If put 1, gets 1fr.
+- grid - display children in grid
+	- display: grid;
+	- grid-template-columns: 1fr 1fr;
+- alternative grid:
+	- grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		- make children 300 px minimum width, 1 fr(actional unit) max
+	- grid-auto-rows: 300px;
+	- grid-gap: 1em;

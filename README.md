@@ -15,6 +15,15 @@ Key features
 - User profile page has various statistics, such as games played and money won
 - Games can be shared with a URL
 
+## Simon CSS - Notes
+
+Something that I learned was that there is a sort of mindset as to how to use bootstrap. Instead of having to code everything and finagling everything into its own place, with Bootstrap you can just type what you would like it to be and (for the most part) it just does it. Some useful classes I've found are:
+
+- bg-dark: useful for a darker color scheme which I prefer
+- container-fluid: good for mentally arranging elements
+- text-reset: I didn't even know this was an option until this project, but it's very useful for changing the color of links
+- bg-secondary: having everything the same color is a bit boring, so having a secondary theme color spices things up a bit.
+
 
 ## Simon HTML - Notes
 
@@ -23,6 +32,7 @@ I am once again impressed by how easiy it is to put files with a Caddy backend a
 Notes for future me:
 - IP address is http://18.216.28.197/
 - remember to shut down both the instance AND the elastic IP address (they are separate)
+
 
 ## Class notes
 

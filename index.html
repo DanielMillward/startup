@@ -4,66 +4,49 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- This is a placeholder for when you start using CSS -->
     <link rel="stylesheet" href="index.css" />
     <title>Template</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
-    <header>
-      <h1>Daniel Millward</h1>
-      <img src="smallerpic.jpg" alt="me" />
-    </header>
+    <nav class="navbar navbar-expand-md navbar-dark bg-secondary py-0">
+      <div class="container-fluid">
+          <a class="navbar-brand font-weight-bold" href="#">CoolPoker</a>
+          <!--For when the screen shrinks-->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <!--Stuff that gets collapsed-->
+          <div class="collapse navbar-collapse" id="navbarContent">
+          <!--ms-auto means, I call dibs on being on the right. Everyone else is left-aligned.-->
+              <ul class="navbar-nav ms-auto">
+                  <li class="nav-item p-2">
+                     
+                        <button type="button" class="btn btn-light border border-dark rounded-pill py-0"> <a class="nav-link text-dark" href="login.html">Login</a></button>
+                  </li>
+                  <li class="nav-item p-2">
+                    <button type="button" class="btn btn-dark rounded-pill py-0"> <a class="nav-link text-light" href="signup.html">Sign Up</a></button>
+                  </li>
+              </ul>
+          </div>
+      </div>
+    </nav>
+  
     <main>
-      <section>
-        <h2>About me</h2>
-        <p>
-          I'm a Computer Science student at BYU. My emphasis is Data Science,
-          meaning I'm hoping to work with AI, Machine Learning and the like.
-          I like to code, play Factorio, and start new projects without finishing
-          my old ones!
-        </p>
-        <p>
-          I have some experience with web/app development, statistical analysis, 
-          international relations, and problem solving. If you need anything related
-          to those skills, contact me on any social media site!
-        </p>
-        
-      </section>
-      <section>
-        <h2>Start up project</h2>
-        <p>
-          This is where the description and link to my start up project will go.
-        </p>
-      </section>
-      <section>
-        <h2>Simon project</h2>
-        <p>
-          This is where the description and link to my implementation of the
-          Simon will go.
-        </p>
-      </section>
-      <section>
-        <h2>Web programming assignments</h2>
-        <h3>HTML</h3>
-        <ul>
-          <li>
-            <a href="https://codepen.io/DanielMillward/pen/qByvOVB">Introduction</a>
-            - Basic HTML page example
-          </li>
-          <li>
-            <a href="https://codepen.io/DanielMillward/pen/xxJBwYK">Structure</a> -
-            All the elements for creating page structure
-          </li>
-          <li>
-            <a href="https://codepen.io/DanielMillward/pen/yLqwYwZ">Input</a> - All
-            the elements for receiving user input
-          </li>
-          <li>
-            <a href="https://codepen.io/DanielMillward/pen/NWBJGQL">Media</a> - All
-            the elements for rendering media objects
-          </li>
-        </ul>
-      </section>
+      <div class="d-flex justify-content-center p-4">
+        <img class="img-fluid customClass" src="maincards.svg"></img>
+      </div>
+      <h1 class="text-center">The CoolPoker Website</h1>
     </main>
+    <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+    crossorigin="anonymous"
+  ></script>
   </body>
 </html>

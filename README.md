@@ -15,6 +15,22 @@ Key features
 - User profile page has various statistics, such as games played and money won
 - Games can be shared with a URL
 
+
+## Simon JS - Notes
+
+I think the coolest thing I learned was just how useful local storage can be. For example, loading a value into storage is as easy as
+```javascript
+localStorage.setItem("userName", nameEl.value);
+```
+And extrating that value is just
+```javascript
+return localStorage.getItem('userName');
+```
+It does make me wonder what the limit for storage is, if it's browser enforced or just however much storage the user has.
+
+I also learned that different browsers have different default permissions - for instance, Safari apparently requires permission to play sound. 
+
+
 ## Startup HTML/CSS - Notes
 
 I learned that the vast majority of what I would have put in a css file can simply be offloaded to Boostrap. I don't know if this was good practice or not, but it was a good test of my skills with a new framework regardless. 

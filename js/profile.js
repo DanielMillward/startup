@@ -20,7 +20,7 @@ document.getElementById('username').textContent = currentUser.username;
 document.getElementById('accountDate').textContent = currentUser.accountDate;
 document.getElementById('gamesPlayed').textContent = currentUser.gamesPlayed;
 document.getElementById('totalMoneyWon').textContent = currentUser.moneyWon;
-document.getElementById('profilePic').src = "https://robohash.org/" + currentUser.username + ".png"
+document.getElementById('profilePic').src = "https://robohash.org/" + encodeURIComponent(currentUser.username) + ".png"
 
 currentUser.games.forEach((value) => {
     console.log(value);
@@ -46,7 +46,7 @@ if (localStorage.getItem('currUser')) {
 
   signoutButton.addEventListener('click', () => {
     localStorage.removeItem('currUser');
-    location.reload();
+    window.location.href = "index.html";
   });
   // Add the "sign out" button to the navbar
   const signoutListItem = document.createElement('li');

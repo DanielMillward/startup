@@ -16,13 +16,13 @@ signupBtn.addEventListener('click', (event) => {
         accountDate: currentDate,
         gamesPlayed: 0,
         moneyWon: 0.0,
-        games: 0
+        games: [0]
     }
 
     users.push(newUserData);
     localStorage.setItem('users', JSON.stringify(users));
-
     localStorage.setItem('currUser', usernameInput.value);
+    
     window.location.href = "profile.html";
     
   } else {

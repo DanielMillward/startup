@@ -1,3 +1,28 @@
+document.getElementById("noUser").style.display = "none"; 
+
+const currUser = localStorage.getItem('currUser');
+
+  // if no current user, don't display page
+  if (!currUser) {
+    document.getElementById("noUser").style.display = "block"; 
+    document.getElementById("profileDiv").style.display = "none"; 
+  } else {
+    // get current user data
+    const users = JSON.parse(localStorage.getItem("users"));
+    const currentUser = users.find(user => user.username === currUser);
+
+    if (!currentUser) {
+        document.getElementById("noUser").style.display = "block"; 
+        document.getElementById("profileDiv").style.display = "none"; 
+    }
+
+    document.getElementById('username').textContent = currentUser.username;
+    document.getElementById('accountDate').textContent = currentUser.accountDate;
+    document.getElementById('gamesPlayed').textContent = currentUser.gamesPlayed;
+    document.getElementById('totalMoneyWon').textContent = currentUser.moneyWon;
+  }
+
+
 // Get the navbar elements
 const anonButtons = document.querySelectorAll('.anonButton');
 const loginButton = anonButtons[0].querySelector('button');

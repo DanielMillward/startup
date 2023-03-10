@@ -36,20 +36,21 @@
     <main>
       <div class="justify-content-center p-5 ">
         <h1 class="text-center mb-5">Sign Up</h1>
-        <form>
+        <form id="signup-form">
           <!-- Email input -->
         <div class="form-outline mx-auto w-75">
-          <input type="email" class="form-control" />
+          <input type="email" class="form-control" id="username-input"/>
           <label class="form-label" >Username</label>
         </div>
 
         <!-- Password input -->
         <div class="form-outline mx-auto w-75">
-          <input type="password" class="form-control" />
+          <input type="password" class="form-control" id="password-input"/>
           <label class="form-label" >Password</label>
         </div>
+
         <div class="form-outline mx-auto w-75">
-          <button type="submit" class="btn btn-primary btn-block mb-3">Sign up</button>
+          <button type="submit" class="btn btn-primary btn-block mb-3" id="signup-button">Sign up</button>
         </div>
         </form>
       </div>
@@ -60,5 +61,6 @@
     integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
     crossorigin="anonymous"
   ></script>
+  <script src="js/signup.js"></script>
   </body>
 </html>

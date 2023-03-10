@@ -22,10 +22,36 @@ document.getElementById('gamesPlayed').textContent = currentUser.gamesPlayed;
 document.getElementById('totalMoneyWon').textContent = currentUser.moneyWon;
 document.getElementById('profilePic').src = "https://robohash.org/" + encodeURIComponent(currentUser.username) + ".png"
 
-currentUser.games.forEach((value) => {
-    console.log(value);
-    });
+
+currentUser.games.forEach((game) => {
+  if (game != [0]){
+    const parentDiv = document.getElementById("profileDiv");
+  const gameDiv = document.createElement("div"); // Create a new div element
+  gameDiv.classList.add("row", "bg-light", "p-3", "mt-3")
+  const gameLink = document.createElement("a");
+  gameLink.innerText = game[0];
+  gameLink.href = '/game.html?userData=' + encodeURI(JSON.stringify(game));
+  const bbtext = document.createElement("p");
+  bbtext.innerText = "Beginning BB: " + game[3];
+  const startonetext = document.createElement("p");
+  startonetext.innerText = "Beginning Stack for Player 1: " + game[1];
+  const starttwotext = document.createElement("p");
+  starttwotext.innerText = "Beginning Stack for Player 1: " + game[2];
+  gameDiv.appendChild(gameLink);
+  gameDiv.appendChild(bbtext);
+  gameDiv.appendChild(startonetext);
+  gameDiv.appendChild(starttwotext);
+  // Add the div to the HTML body
+  parentDiv.appendChild(gameDiv);
+  }
+});
+
+
+
+    
 }
+
+
 
 
 

@@ -33,17 +33,33 @@ signupBtn.addEventListener('click', (event) => {
     console.log('Big Blind: ', bigBlindInput.value);
     console.log('Starting Stack for Player 1: ', startingStackOneInput.value);
     console.log('Starting Stack for Player 2: ', startingStackTwoInput.value);
+
+
     if (gameNameInput.value && !isNaN(bigBlindInput.value) && !isNaN(startingStackOneInput.value) && !isNaN(startingStackTwoInput.value)) {
       bb = parseInt(bigBlindInput.value)
       stackOne = parseInt(startingStackOneInput.value)
       stackTwo = parseInt(startingStackTwoInput.value)
-      if (bb < stackOne && bb < stackTwo) {
-        alert("all good!")
-      } else {
-        alert("BB needs to be smaller than either stack.")
-      }
+      let alreadyExists = false;
+      for (var i = 0; i < currentUser.games.length; i++) {
+        if (currentUser.games[i][0] == gameNameInput.value) {
+            alert("Game of same name already exists.");
+            alreadyExists = true;
+        }
+        }
+        if (! alreadyExists) {
+            gameArray = [gameNameInput.value, stackOne, stackTwo, bb]
+
+        // Update games of user
+        tempGames = currentUser.games;
+        tempGames.push(gameArray);
+        currentUser.games = tempGames
+        let updatedUsers = JSON.stringify(users);
+        localStorage.setItem('users', updatedUsers);
+
+        window.location.href = '/game.html?userData=' + encodeURI(JSON.stringify(gameArray));
+        }
     } else {
-      alert("Please fill in all fields, with the big blind/stacks being a number and the big blind less than either stack.");
+      alert("Please fill in all fields, with the big blind/stacks being a number.");
     }
   });
 

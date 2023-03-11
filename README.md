@@ -16,6 +16,24 @@ Key features
 - Games can be shared with a URL
 
 
+## Startup JS - Notes
+
+I used a lot of localStorage as a substitute for server use, since just pure JS on the client side doesn't really lend itself to online multiplayer all that well. That being said, I still learned a lot about adding and changing state to web pages. For instance, you can change the page URI with something like 
+
+```javascript
+history.replaceState(null, null, '/game.html');
+```
+
+You do have to make sure that elements refresh correctly but that's basically all you need!
+
+I also learned a lot more about Javascript's JSON tie-ins. It's fairly easy to put JSON in the url by doing:
+
+```javascript
+let encodedurl = encodeURI(JSON.stringify(gameArray));
+```
+
+I'm sure there are ways to pass data through the form or other POST somethings, but for now URL data works great. And besides, one of my objectives was to be able to share a game just with a URL so it works out.
+
 ## Simon JS - Notes
 
 I think the coolest thing I learned was just how useful local storage can be. For example, loading a value into storage is as easy as

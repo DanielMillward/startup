@@ -56,85 +56,20 @@ t4 = document.getElementById("t4");
 t5 = document.getElementById("t5");
 let pot = document.getElementById("pot");
 let tomove = document.getElementById("tomove");
+let nextroundbutton = document.getElementById("nextRound");
+let checkbutton = document.getElementById("checkbutton");
+let callbutton = document.getElementById("callbutton");
+let betbutton = document.getElementById("betbutton");
+let raiseBBbutton = document.getElementById("raiseBBbutton");
+let foldbutton = document.getElementById("foldbutton");
+let currUser = localStorage.getItem('currUser');
+
 
 onename.textContent = firstPlayer + " (you)";
 twoname.textContent = secondPlayer;
 newRound = false
 
-// brand new game, initialize stacks/cards
-if (userData.length == 6) {
-    console.log("initiating...");
-    newRound = true
-    userData.push(startStackOne - bb/2);
-    userData.push(startStackTwo - bb);
-
-    var cards = [];
-    for (var i = 1; i <= 52; i++) {
-        cards.push(i);
-    }
-    cards = shuffleArray(cards)
-    userData.push([cards[0], cards[1]])
-    userData.push([cards[2], cards[3]])
-    userData.push([cards[4], cards[5], cards[6], cards[7], cards[8]])
-    
-    userData.push("preflop");
-    userData.push([]);
-    userData.push(bb * 1.5)
-    userData.push(1);
-}
-console.log(userData[14] + " is 14s");
-
-
-// put data on screen
-onestack.textContent = "$" + userData[6];
-twostack.textContent = "$" + userData[7];
-newroundtext.textContent =  userData[11] == "preflop" ? "New Round" : "";
-pot.textContent = "Pot: $" + userData[13];
-tomove.textContent = userData[14] == 1 ? firstPlayer + "\'s turn" : secondPlayer + "\'s turn";
-console.log(userData[11])
-p1c1src = getCardName(userData[9][0]) 
-p1c2src = getCardName(userData[9][1]) 
-p2c1src = getCardName(userData[10][0]) 
-p2c2src = getCardName(userData[10][1])
-if (currplayer == firstPlayer || userData[11] == "showdown") {
-    p1c1.src = "rec\\English_pattern_" + getCardName(userData[8][0]) + ".svg" 
-    p1c2.src = "rec\\English_pattern_" + getCardName(userData[8][1]) + ".svg" 
-} else {
-    p1c1.src = "rec\\card_back.svg" 
-    p1c2.src = "rec\\card_back.svg" 
-}
-
-if (currplayer == secondPlayer || userData[11] == "showdown") {
-    p2c1.src = "rec\\English_pattern_" + getCardName(userData[9][0]) + ".svg" 
-    p2c2.src = "rec\\English_pattern_" + getCardName(userData[9][1]) + ".svg" 
-} else {
-    p2c1.src = "rec\\card_back.svg" 
-    p2c2.src = "rec\\card_back.svg" 
-}
-t1.src = "rec\\card_back.svg"
-t2.src = "rec\\card_back.svg"
-t3.src = "rec\\card_back.svg"
-t4.src = "rec\\card_back.svg"
-t5.src = "rec\\card_back.svg"
-console.log("11"+userData[11])
-if (userData[11] != "preflop") {
-    t1.src = "rec\\English_pattern_" + getCardName(userData[10][0]) + ".svg" 
-    t2.src = "rec\\English_pattern_" + getCardName(userData[10][1]) + ".svg" 
-    t3.src = "rec\\English_pattern_" + getCardName(userData[10][2]) + ".svg" 
-}
-if (userData[11] != "preflop" && userData[11] != "flop") {
-    t4.src = "rec\\English_pattern_" + getCardName(userData[10][3]) + ".svg" 
-}
-if (userData[11] != "preflop" && userData[11] != "flop" && userData[11] != "turn") {
-    t4.src = "rec\\English_pattern_" + getCardName(userData[10][4]) + ".svg" 
-}
-
-//grey out options depending on turn
-let button = document.getElementById("nextRound");
-button.disabled = true;
-
-
-//update url in game list of user, then and move on to url
+//get data
 let users = JSON.parse(localStorage.getItem('users'));
 let userIndex = users.findIndex(function(user) {
     return user.username === firstPlayer;
@@ -143,10 +78,94 @@ console.log(userIndex)
 let gameIndex = users[userIndex].games.findIndex(function(game) {
 return game[0] === gameName;
 });
-console.log(gameIndex)
+console.log("Round start:" + userData)
+var cards = [];
+for (var i = 1; i <= 52; i++) {
+    cards.push(i);
+}
+
+
+// brand new game, initialize stacks/cards
+if (userData.length == 6) {
+    console.log("initiating...");
+    newRound = true
+    userData.push(startStackOne - bb/2);
+    userData.push(startStackTwo - bb);
+    userData.push([cards[0], cards[1]]);
+    userData.push([cards[2], cards[3]]);
+    userData.push([cards[4], cards[5], cards[6]]);
+    userData.push("preflop");
+    userData.push([]);
+    userData.push(bb* 1.5);
+    userData.push(1);
+
+    users[userIndex].games[gameIndex] = userData;
+    localStorage.setItem('users', JSON.stringify(users));
+    history.replaceState(null, null, '/game.html?userData=' + encodeURI(JSON.stringify(userData)));
+}
+//on very first page load?
+updateDisplay();
+
+
+console.log(userData[6] + " is 6s");
+
+
+//grey out options depending on turn
+currPlayerName = userData[14] == 1 ? firstPlayer : secondPlayer;
+
+if (currPlayerName != currUser) {
+    checkbutton.disabled = true;
+    betbutton.disabled = true;
+    nextroundbutton.disabled = true;
+    foldbutton.disabled = true;
+    raiseBBbutton.disabled = true;
+    callbutton.disabled = true;
+}
+if (userData[11] == "preflop" && userData[14] == 1) {
+    checkbutton.disabled = true;
+    betbutton.disabled = true;
+    nextroundbutton.disabled = true;
+}
+
+
+//take action
+foldbutton.addEventListener('click', () => {
+    
+    
+    /*
+    0. Game Name
+1. player 1 start stack size
+2. player 2 start stack size
+3. bb size
+4. first player/game maker
+5. second player
+6. player 1 current stack size
+7. player 2 current stack size
+8. player 1 cards (hashed)
+9. player 2 cards (hashed)
+10. table cards
+11. current betting round
+12. actions taken this round
+13. Pot size
+14. Player to move */
+cards = shuffleArray(cards);
+userData[7] += userData[13];
+userData[6] -= bb/2;
+userData[7] -= bb;
+userData[8] = [cards[0], cards[1]];
+userData[9] = [cards[2], cards[3]];
+userData[10] = [cards[4], cards[5], cards[6]];
+userData[11] = "preflop";
+userData[12] = [];
+userData[13] = bb * 1.5;
+userData[14] = 1;
+
 users[userIndex].games[gameIndex] = userData;
+console.log("fold date" + userData);
 localStorage.setItem('users', JSON.stringify(users));
 history.replaceState(null, null, '/game.html?userData=' + encodeURI(JSON.stringify(userData)));
+updateDisplay();
+});
 
 
 
@@ -160,10 +179,51 @@ history.replaceState(null, null, '/game.html?userData=' + encodeURI(JSON.stringi
 
 
 
-
-
-
-
+//update elements
+function updateDisplay() {
+    onestack.textContent = "$" + userData[6];
+    twostack.textContent = "$" + userData[7];
+    newroundtext.textContent =  userData[11] == "preflop" ? "New Round" : "";
+    pot.textContent = "Pot: $" + userData[13];
+    tomove.textContent = userData[14] == 1 ? firstPlayer + "\'s turn" : secondPlayer + "\'s turn";
+    console.log(userData[11])
+    p1c1src = getCardName(userData[9][0]) 
+    p1c2src = getCardName(userData[9][1]) 
+    p2c1src = getCardName(userData[10][0]) 
+    p2c2src = getCardName(userData[10][1])
+    if (currplayer == firstPlayer || userData[11] == "showdown") {
+        p1c1.src = "rec\\English_pattern_" + getCardName(userData[8][0]) + ".svg" 
+        p1c2.src = "rec\\English_pattern_" + getCardName(userData[8][1]) + ".svg" 
+    } else {
+        p1c1.src = "rec\\card_back.svg" 
+        p1c2.src = "rec\\card_back.svg" 
+    }
+    
+    if (currplayer == secondPlayer || userData[11] == "showdown") {
+        p2c1.src = "rec\\English_pattern_" + getCardName(userData[9][0]) + ".svg" 
+        p2c2.src = "rec\\English_pattern_" + getCardName(userData[9][1]) + ".svg" 
+    } else {
+        p2c1.src = "rec\\card_back.svg" 
+        p2c2.src = "rec\\card_back.svg" 
+    }
+    t1.src = "rec\\card_back.svg"
+    t2.src = "rec\\card_back.svg"
+    t3.src = "rec\\card_back.svg"
+    t4.src = "rec\\card_back.svg"
+    t5.src = "rec\\card_back.svg"
+    console.log("11"+userData[11])
+    if (userData[11] != "preflop") {
+        t1.src = "rec\\English_pattern_" + getCardName(userData[10][0]) + ".svg" 
+        t2.src = "rec\\English_pattern_" + getCardName(userData[10][1]) + ".svg" 
+        t3.src = "rec\\English_pattern_" + getCardName(userData[10][2]) + ".svg" 
+    }
+    if (userData[11] != "preflop" && userData[11] != "flop") {
+        t4.src = "rec\\English_pattern_" + getCardName(userData[10][3]) + ".svg" 
+    }
+    if (userData[11] != "preflop" && userData[11] != "flop" && userData[11] != "turn") {
+        t4.src = "rec\\English_pattern_" + getCardName(userData[10][4]) + ".svg" 
+    }
+}
 
 //shuffle algo
 function shuffleArray(array) {
@@ -176,7 +236,7 @@ function shuffleArray(array) {
     return array;
   }
 
-  //get card name
+//get card name
 function getCardName(cardNum) {
     output = "";
     switch (cardNum) {

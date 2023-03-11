@@ -18,10 +18,12 @@ if (!currentUser) {
 
 document.getElementById('username').textContent = currentUser.username;
 document.getElementById('accountDate').textContent = currentUser.accountDate;
-document.getElementById('gamesPlayed').textContent = currentUser.gamesPlayed;
+document.getElementById('gamesPlayed').textContent = currentUser.games.length;
 document.getElementById('totalMoneyWon').textContent = currentUser.moneyWon;
 document.getElementById('profilePic').src = "https://robohash.org/" + encodeURIComponent(currentUser.username) + ".png"
 
+// TODO: Update money won to be (total absolute starting stack) - (total absolutefinal stack)
+// Since they're in BB and that changes game to game
 
 currentUser.games.forEach((game) => {
   if (game != [0]){
@@ -31,13 +33,17 @@ currentUser.games.forEach((game) => {
   const gameLink = document.createElement("a");
   gameLink.innerText = game[0];
   gameLink.href = '/game.html?userData=' + encodeURI(JSON.stringify(game));
+  const usertext = document.createElement("p");
+  usertext.innerText = "Other Player: " + game[5];
   const bbtext = document.createElement("p");
   bbtext.innerText = "Beginning BB: " + game[3];
   const startonetext = document.createElement("p");
   startonetext.innerText = "Beginning Stack for Player 1: " + game[1];
   const starttwotext = document.createElement("p");
   starttwotext.innerText = "Beginning Stack for Player 1: " + game[2];
+
   gameDiv.appendChild(gameLink);
+  gameDiv.appendChild(usertext);
   gameDiv.appendChild(bbtext);
   gameDiv.appendChild(startonetext);
   gameDiv.appendChild(starttwotext);

@@ -11,6 +11,7 @@ document.getElementById("profileDiv").style.display = "none";
 
 
 const gameNameInput = document.getElementById('gameName');
+const otherPlayerInput = document.getElementById('otherPlayer');
 const bigBlindInput = document.getElementById('bigBlind');
 const startingStackOneInput = document.getElementById('stackOne');
 const startingStackTwoInput = document.getElementById('stackTwo');
@@ -35,7 +36,7 @@ signupBtn.addEventListener('click', (event) => {
     console.log('Starting Stack for Player 2: ', startingStackTwoInput.value);
 
 
-    if (gameNameInput.value && !isNaN(bigBlindInput.value) && !isNaN(startingStackOneInput.value) && !isNaN(startingStackTwoInput.value)) {
+    if (gameNameInput.value && otherPlayerInput.value && !isNaN(bigBlindInput.value) && !isNaN(startingStackOneInput.value) && !isNaN(startingStackTwoInput.value)) {
       bb = parseInt(bigBlindInput.value)
       stackOne = parseInt(startingStackOneInput.value)
       stackTwo = parseInt(startingStackTwoInput.value)
@@ -47,7 +48,7 @@ signupBtn.addEventListener('click', (event) => {
         }
         }
         if (! alreadyExists) {
-            gameArray = [gameNameInput.value, stackOne, stackTwo, bb]
+            gameArray = [gameNameInput.value, stackOne, stackTwo, bb, currUser, otherPlayerInput.value]
 
         // Update games of user
         tempGames = currentUser.games;

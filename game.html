@@ -25,10 +25,15 @@
           <div class="collapse navbar-collapse" id="navbarContent">
           <!--ms-auto means, I call dibs on being on the right. Everyone else is left-aligned.-->
               <ul class="navbar-nav ms-auto">
-                <li class="nav-item p-2">
+                <ul class="navbar-nav ms-auto">
+                  <li class="nav-item p-2 anonButton">
                      
-                  <button type="button" class="btn btn-light border border-dark rounded-pill py-0"> <a class="nav-link text-dark" href="/">Logout</a></button>
-            </li>
+                        <button type="button" class="btn btn-light border border-dark rounded-pill py-0"> <a class="nav-link text-dark" href="login.html">Login</a></button>
+                  </li>
+                  <li class="nav-item p-2 anonButton">
+                    <button type="button" class="btn btn-dark rounded-pill py-0"> <a class="nav-link text-light" href="signup.html">Sign Up</a></button>
+                  </li>
+              </ul>
               </ul>
           </div>
       </div>
@@ -37,14 +42,14 @@
       <div class="container mt-4">
         <div class="row">
           <div class="col-lg-2">
-            <h2>Player 2</h2>
-            <h4>$1500</h4>
+            <h2 id="twoName">Player 2</h2>
+            <h4 id="twoStack">$1500</h4>
           </div>
           <div class="col-lg-1">
-            <img class="img-fluid customClass" src="rec/card_back.svg" style="height: 100px;"></img>
+            <img class="img-fluid customClass" src="rec/card_back.svg" style="height: 100px;" id="p2c1"></img>
           </div>
           <div class="col-lg-1">
-            <img class="img-fluid customClass" src="rec/card_back.svg" style="height: 100px;"></img>
+            <img class="img-fluid customClass" src="rec/card_back.svg" style="height: 100px;" id="p2c2"></img>
           </div>
           <div class="col-lg-8">
             </div>
@@ -53,43 +58,50 @@
           <div class="d-flex justify-content-center">
             <div class="table-ellipse">
               <div class="text-center mt-5">
-                <h4>Player 2's Turn</h4>
+                <h4 id="tomove">Player 2's Turn</h4>
                 <div class="row mx-0 justify-content-center mb-3">
-                  <div class="col-lg-3"></div>
                   <div class="col-2 px-0">
-                    <img src="rec/9_of_clubs.svg" alt="Card 1" class="card-img">
+                    <img src="rec/9_of_clubs.svg" alt="Card 1" class="card-img" id="t1">
                   </div>
                   <div class="col-2 px-0">
-                    <img src="rec/10_of_clubs.svg" alt="Card 2" class="card-img">
+                    <img src="rec/10_of_clubs.svg" alt="Card 2" class="card-img" id="t2">
                   </div>
                   <div class="col-2 px-0">
-                    <img src="rec/Jack_of_clubs.svg" alt="Card 3" class="card-img">
+                    <img src="rec/Jack_of_clubs.svg" alt="Card 3" class="card-img" id="t3">
+                  </div>
+                  <div class="col-2 px-0">
+                    <img src="rec/Jack_of_clubs.svg" alt="Card 3" class="card-img" id="t4">
+                  </div>
+                  <div class="col-2 px-0">
+                    <img src="rec/Jack_of_clubs.svg" alt="Card 3" class="card-img" id="t5">
                   </div>
                   <div class="col-lg-3"></div>
                 </div>
-                <p>Pot: $160</p>
+                <p id="pot">Pot: $160</p>
+                <p id="newround">New Round</p>
               </div>
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-lg-2">
-            <h2>Player 1 (you)</h2>
-            <h4>$1500</h4>
+            <h2 id="oneName">Player 1 (you)</h2>
+            <h4 id="oneStack">$1500</h4>
           </div>
           <div class="col-lg-1">
-            <img class="img-fluid customClass" src="rec/Ace_of_spades.svg" style="height: 100px;"></img>
+            <img class="img-fluid customClass" src="rec/Ace_of_spades.svg" style="height: 100px;" id="p1c1"></img>
           </div>
           <div class="col-lg-1">
-            <img class="img-fluid customClass" src="rec/8_of_clubs.svg" style="height: 100px;"></img>
+            <img class="img-fluid customClass" src="rec/8_of_clubs.svg" style="height: 100px;" id="p1c2"></img>
           </div>
           <div class="col-lg-4">
             </div>
           <div class="col-lg-4 pt-2">
             <div class="float-end">
               <div class="row mx-0 ">
-                <div class="col-lg-6 px-0 ml-0"><button type="button" class="text-nowrap btn btn-light border border-dark"> <a class="nav-link text-dark" href="#">Check</a></button></div>
-                <div class="col-lg-6 px-0 mr-0"><button type="button" class="text-nowrap btn btn-light border border-dark"> <a class="nav-link text-dark" href="#">Bet Pot</a></button></div>
+                <div class="col-lg-4 px-0 ml-0"><button type="button" class="text-nowrap btn btn-light border border-dark"> <a class="nav-link text-dark" href="#">Check</a></button></div>
+                <div class="col-lg-4 px-0 mr-0"><button type="button" class="text-nowrap btn btn-light border border-dark"> <a class="nav-link text-dark" href="#">Call</a></button></div>
+                <div class="col-lg-4 px-0 mr-0"><button type="button" class="text-nowrap btn btn-light border border-dark"> <a class="nav-link text-dark" href="#">Bet BB</a></button></div>
               </div>
               <div class="row mt-3">
                 <div class="progress p-0">
@@ -98,9 +110,13 @@
                   </div>
                 </div>
               </div>
-              <div class="row mt-3 float-center">
-                <button type="button" class="text-nowrap btn btn-light border border-dark"> <a class="nav-link text-dark" href="#">Bet $200</a></button>
+              <div class="row mx-0 ">
+                <div class="col-lg-6 px-0 ml-0"><button type="button" class="text-nowrap btn btn-light border border-dark"> <a class="nav-link text-dark" href="#">Bet $200</a></button></div>
+                <div class="col-lg-2 px-0 mr-0"><button id="nextRound" class="btn btn-primary">Next Round</button>
+                
+                </div>
               </div>
+              
             </div>
           </div>
         </div>
@@ -112,5 +128,6 @@
     integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
     crossorigin="anonymous"
   ></script>
+  <script src="js/game.js"></script>
   </body>
 </html>

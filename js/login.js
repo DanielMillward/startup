@@ -3,17 +3,16 @@ const usernameInput = document.getElementById('username-input');
 const passwordInput = document.getElementById('password-input');
 const loginBtn = document.getElementById('login-button');
 
+
+
+
 loginBtn.addEventListener('click', (event) => {
   event.preventDefault(); // Needed for some reason
-
-
   if (usernameInput.value && passwordInput.value) {
     var users = JSON.parse(localStorage.getItem("users"));
     var username = document.getElementById("username-input").value;
     var password = document.getElementById("password-input").value;
     var found = false;
-
-
     if (users) {
       for (var i = 0; i < users.length; i++) {
         if (users[i].username == username && users[i].password == password) {
@@ -24,7 +23,6 @@ loginBtn.addEventListener('click', (event) => {
     } else {
       alert("No users found.");
     }
-
     if (found) {
         localStorage.setItem('currUser', usernameInput.value);
         window.location.href = "profile.html";

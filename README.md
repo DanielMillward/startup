@@ -16,6 +16,40 @@ Key features
 - Games can be shared with a URL
 
 
+## Fetch - Notes
+
+For a simple GET request, using fetch is as simple as:
+
+```javascript
+fetch('https://api.quotable.io/random')
+  .then((response) => response.json())
+  .then((jsonResponse) => {
+    console.log(jsonResponse);
+  });
+```
+
+For POST it's a bit more complicated, but fairly straightforward JSON syntax:
+
+```javascript
+fetch('https://jsonplaceholder.typicode.com/posts', {
+  method: 'POST',
+  body: JSON.stringify({
+    title: 'test title',
+    body: 'test body',
+    userId: 1,
+  }),
+  headers: {
+    'Content-type': 'application/json; charset=UTF-8',
+  },
+})
+  .then((response) => response.json())
+  .then((jsonResponse) => {
+    console.log(jsonResponse);
+  });
+```
+
+This code came from [here](https://github.com/webprogramming260/.github/blob/main/profile/webServices/fetch/fetch.md).
+
 ## Startup JS - Notes
 
 I used a lot of localStorage as a substitute for server use, since just pure JS on the client side doesn't really lend itself to online multiplayer all that well. That being said, I still learned a lot about adding and changing state to web pages. For instance, you can change the page URI with something like 

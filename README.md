@@ -16,6 +16,36 @@ Key features
 - Games can be shared with a URL
 
 
+## Simon Service - Notes
+
+The straightforwardness of middleware was even more evident after making the Simon application with it. It really is as simple as telling express what you want to have happen. For example,
+
+Telling express "I'd like to parse body requests with JSON":
+```javascript
+app.use(express.json());
+```
+
+Telling express "I'd like to serve static files from the public directory":
+```javascript
+app.use(express.static('public'));
+```
+
+Telling express "I'd like to pass the handling of all /api requests to a router":
+```javascript
+var apiRouter = express.Router();
+app.use(`/api`, apiRouter);
+```
+
+Telling a router "When you get a post request to /score, I'd like you to do this":
+```javascript
+apiRouter.post('/score', (req, res) => {
+  scores = updateScores(req.body, scores);
+  res.send(scores);
+});
+```
+
+It's a different mentality than a lot of other programming I've done but I do like it a lot.
+
 ## Fetch - Notes
 
 For a simple GET request, using fetch is as simple as:

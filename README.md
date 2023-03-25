@@ -16,6 +16,20 @@ Key features
 - Games can be shared with a URL
 
 
+## Simon DB - Notes
+
+I have the advantage of taking this class at the same time as CS452, which covers databases. It so happens that we're covering MongoDB now as well, which is helpful. This class was helpful in the best practices surrounded databases, such as storing usernames and keys not in the public github repo. For production/linux environments, you just modify
+
+```
+/etc/environment
+```
+
+That is, the file environment (no file extension) in the etc/ folder. There, you just add the lines KEYNAME=keyvalue
+
+For Windows, it's the same sort of action of editing the PATH variable, except you get to add your own variables this time! I've actually never done that before and thought that was cool.
+
+This project also helped me understand what a cursor is - basically, just a pointer to the first item in the list. you can call the forEach() function on it to iterate through it, similar to a regular iterator. 
+
 ## Simon Service - Notes
 
 The straightforwardness of middleware was even more evident after making the Simon application with it. It really is as simple as telling express what you want to have happen. For example,

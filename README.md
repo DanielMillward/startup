@@ -15,6 +15,37 @@ Key features
 - User profile page has various statistics, such as games played and money won
 - Games can be shared with a URL
 
+## Simon Websocket - Notes
+
+I had never really looked at what Websocket actually was, and so it seemed pretty cool after looking at the class's articles. I had always thought that sending full-fledged HTTP requests either way was the only real way to communicate, so finding out there were alternatives was fun. It is, in my mind, a very similar setup to a normal express server, except you do it for both the client code and the server code. That is, you tell it "when you get this message, do this thing." For example, this is for when the connection is opened:
+
+```javascript
+this.socket.onopen = (event) => {
+      this.displayMsg('system', 'game', 'connected');
+    };
+```
+
+For when it's closed:
+
+```javascript
+this.socket.onclose = (event) => {
+      this.displayMsg('system', 'game', 'disconnected');
+    };
+```
+
+And for when there's a brand new message that came in:
+
+```javascript
+    this.socket.onmessage = async (event) => {
+      const msg = JSON.parse(await event.data.text());
+      if (msg.type === GameEndEvent) {
+        this.displayMsg('player', msg.from, `scored ${msg.value.score}`);
+      } else if (msg.type === GameStartEvent) {
+        this.displayMsg('player', msg.from, `started a new game`);
+      }
+    };
+```
+
 ## Simon login - Notes
 
 So it turns out I forgot to restart the simon service, meaning it was still referencing the old service's connection details. I restarted it with

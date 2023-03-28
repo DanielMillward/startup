@@ -15,6 +15,39 @@ Key features
 - User profile page has various statistics, such as games played and money won
 - Games can be shared with a URL
 
+## Simon login - Notes
+
+So it turns out I forgot to restart the simon service, meaning it was still referencing the old service's connection details. I restarted it with
+
+```bash
+pm2 restart all --update-env
+pm2 save
+```
+
+Not too bad, just gave me an hour or so of head scratching.
+
+I learned a lot about authorization in relation to web servies. Maybe the most interesting thing was how passwords are verified after being passed through a hash function. It's just comparing the two using bcrypt:
+
+```javascript
+app.post('/auth/login', async (req, res) => {
+  const user = await getUser(req.body.email);
+  if (user) {
+    if (await bcrypt.compare(req.body.password, user.password)) {
+      setAuthCookie(res, user.token);
+      res.send({ id: user._id });
+      return;
+    }
+  }
+  res.status(401).send({ msg: 'Unauthorized' });
+});
+```
+
+Where it follows the sequence of:
+1. Query the database to find a document/BSON object with a matching email field
+2. If we found one, compare the password from the request to the one in the database. If they match, send an authorization cookie.
+3. Otherwise, say you're unauthorized.
+
+I know there's a lot more in regards to securing web applications, but this seems like a fairly straighforward first step. I know that salting is a thing, so maybe in the future I can implement that in some of my personal projects.
 
 ## Simon DB - Notes
 

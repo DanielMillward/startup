@@ -24,12 +24,21 @@
           <!--Stuff that gets collapsed-->
           <div class="collapse navbar-collapse" id="navbarContent">
           <!--ms-auto means, I call dibs on being on the right. Everyone else is left-aligned.-->
-              <ul class="navbar-nav ms-auto">
-                <li class="nav-item p-2">
-                     
-                  <button type="button" class="btn btn-light border border-dark rounded-pill py-0"> <a class="nav-link text-dark" href="login.html">Login</a></button>
-            </li>
-              </ul>
+          <ul class="navbar-nav ms-auto">
+            <p class="navbar-brand font-weight-bold my-2" id="greeting" style="display: none;">Hello, <span id="playerName">user</span></p>
+              <li class="nav-item p-2 anonButton" id="loginButton">
+                    <button type="button" class="btn btn-light border border-dark rounded-pill py-0"> <a class="nav-link text-dark" href="login.html">Login</a></button>
+              </li>
+              <li class="nav-item p-2 anonButton" id="signupButton" style="display: none;">
+                <button type="button" class="btn btn-dark rounded-pill py-0"> <a class="nav-link text-light" href="signup.html">Sign Up</a></button>
+              </li>
+              <li class="nav-item p-2 anonButton" id="profileButton" style="display: none;">
+                <button type="button" class="btn btn-light border border-dark rounded-pill py-0"> <a class="nav-link text-dark" href="profile.html">Profile</a></button>
+              </li>
+              <li class="nav-item p-2 anonButton" id="logoutButton" style="display: none;">
+                <button type="button" class="btn btn-dark rounded-pill py-0"> <a class="nav-link text-light" href="signup.html">Logout</a></button>
+              </li>
+          </ul>
           </div>
       </div>
     </nav>

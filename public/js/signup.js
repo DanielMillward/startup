@@ -42,3 +42,52 @@ signupBtn.addEventListener('click', (event) => {
     alert('Please fill out both username and password fields.');
   }
 });
+
+document.addEventListener('DOMContentLoaded', async () => {
+  let authenticated = false;
+  const userName = localStorage.getItem('userName');
+  if (userName) {
+    //const nameEl = document.querySelector('#userName');
+    //nameEl.value = userName;
+    const user = await getUser(userName);
+    console.log("user is " + user)
+    if (user !== null) {
+      authenticated = true;
+    }
+  }
+
+  if (authenticated) {
+    console.log("authenticated");
+    document.querySelector('#playerName').textContent = userName;
+    setDisplay('loginButton', 'none');
+    setDisplay('signupButton', 'none');
+    setDisplay('profileButton', 'block');
+    setDisplay('logoutButton', 'block');
+    setDisplay('greeting', 'block');
+  } else {
+    console.log("not authenticated");
+    setDisplay('loginButton', 'block');
+    setDisplay('signupButton', 'block');
+    setDisplay('profileButton', 'none');
+    setDisplay('logoutButton', 'none');
+    setDisplay('greeting', 'none');
+  }
+});
+
+
+async function getUser(email) {
+  // See if we have a user with the given email.
+  const response = await fetch(`/api/user/${email}`);
+  if (response.status === 200) {
+    return response.json();
+  }
+
+  return null;
+}
+
+function setDisplay(controlId, display) {
+  const playControlEl = document.querySelector(`#${controlId}`);
+  if (playControlEl) {
+    playControlEl.style.display = display;
+  }
+}

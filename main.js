@@ -7,12 +7,10 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.static('public'));
-
-// Router for service endpoints
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 
-//check if have valid token. If so, redirect to profile
+// redirect to profile if already logged in
 const loggedInMiddleware = async (req, res, next) => {
     if (req.cookies.userToken) {
         const user = await DB.getUserByToken(req.cookies.userToken);
@@ -27,6 +25,7 @@ const loggedInMiddleware = async (req, res, next) => {
     next();
 }
 
+// check both username & password are in body
 function bothUserNameAndPasswordPresent(req) {
     if (!req.body) {
         console.log("no body");
@@ -44,7 +43,7 @@ apiRouter.get('/', loggedInMiddleware, (req, res) => {
     res.send('welcome to a simple HTTP cookie server');
 });
 
-//for making users
+// Sign up
 apiRouter.post('/auth/create', async (req, res) => {
     if (!bothUserNameAndPasswordPresent(req)) {
         res.status(413).send({msg: 'either username or password not here'});
@@ -55,14 +54,13 @@ apiRouter.post('/auth/create', async (req, res) => {
             const user = await DB.createUser(req.body.email, req.body.password);
             // Set the cookie
             res.cookie("userToken",user.token);
-            res.send({
-              id: user._id,
-            });
+            res.cookie("userName", user.email);
+            res.status(422).send({msg: 'need to redirect to profile'});
           }
     }
   });
 
-// GetAuth token for the provided credentials
+// Login
 apiRouter.post('/auth/login', async (req, res) => {
     if (!bothUserNameAndPasswordPresent(req)) {
         res.status(413).send({msg: 'either username or password not here'});
@@ -71,7 +69,8 @@ apiRouter.post('/auth/login', async (req, res) => {
         if (user) {
             if (await bcrypt.compare(req.body.password, user.password)) {
                 res.cookie("userToken", user.token);
-                res.redirect('/profile.html');
+                res.cookie("userName", user.email);
+                res.status(422).send({msg: 'need to redirect to profile'});
                 return;
             }
         }
@@ -88,4 +87,4 @@ apiRouter.delete('/auth/logout', (_req, res) => {
 
 
 //server listening to port 3000
-app.listen(3000, () => console.log('The server is running port 8000...'));
+app.listen(3000, () => console.log('The server is running port 3000...'));

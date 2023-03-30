@@ -2,10 +2,15 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const DB = require('./database.js');
 const bcrypt = require('bcrypt');
+const http = require('http');
+const WebSocket = require('ws');
+const url = require('url');
 
 const app = express();
+const server = http.createServer(app);
 app.use(cookieParser());
 app.use(express.json());
+
 app.use(express.static('public'));
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
@@ -136,10 +141,81 @@ apiRouter.post('/addgame', async (req, res) => {
     res.status(401).send({ msg: 'Unauthorized' });
 });
 
-//update and broadcast game state (websocket) updates both game and users datas
+//Set up websocket bit
+//NOTE: Each connection is separate from one another. Meaning, you can save data from
+// the initial connection for later messages!
+const wss = new WebSocket.Server({ server });
+wss.on('connection', async (ws, req) => {
+    //authenticate web socket request
+  const queryObject = url.parse(req.url, true).query;
+  console.log('WebSocket client connected');
+  if (!queryObject) {
+    console.log('User has no query params');
+    ws.terminate();
+    return;
+  }
+  const authToken = queryObject.userToken;
+  let userObject;
+  if (authToken) {
+    const user = await DB.getUserByToken(queryObject.userToken);
+    if (user) {
+        console.log('User is authenticated, user ' + user.email);
+        userObject = user;
+    } else {
+        console.log('User is not authenticated, had token though');
+        ws.terminate();
+    }
+  } else {
+    console.log('User is not authenticated - no token detected');
+    ws.terminate();
+  }
+  
+  //use userobject for info
+  ws.on('message', async (message) => {
+    try {
+        msg = JSON.parse(message);
+    } catch {
+        ws.send(`Not valid json`);
+        return;
+    }
+    if (!((msg.request === "update") || (msg.request === "getactions"))) {
+        ws.send(`No request of that type found`);
+        return;
+    }
+    //update and broadcast game state (websocket) updates both game and users datas
+    if (msg.request === "update") {
+        if (!msg.data.email || !msg.data.gameName) {
+            ws.send(`please give email and gameName`);
+            return;
+        }
+        let currGame = await DB.getUserGame(msg.data.email, msg.data.gameName);
+        console.log("currgame " + JSON.stringify(currGame));
+        currGame = findGameFromArray(currGame.games, msg.data.gameName);
+        console.log("currgame " + JSON.stringify(currGame));
+        ws.send(JSON.stringify(currGame));
+        return;
+    }
+
+    //get legal actions (websocket)
+
+    ws.send(`You said: ${message}`);
+  });
+
+  ws.on('close', () => {
+    console.log('WebSocket client disconnected');
+  });
+});
 
 
-//get legal actions (websocket)
 
 //server listening to port 3000
-app.listen(3000, () => console.log('The server is running port 3000...'));
+server.listen(3000, () => console.log('The server is running port 3000...'));
+
+function findGameFromArray(gameArray, gameName) {
+    for (let i = 0; i < gameArray.length; i++) {
+        if (gameArray[i].gameName === gameName) {
+          return gameArray[i];
+        }
+      }
+      return undefined;
+}

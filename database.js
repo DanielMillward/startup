@@ -20,6 +20,24 @@ function getUser(email) {
   return userCollection.findOne({ email: email });
 }
 
+function getUserGame(email, gameName) {
+  return userCollection.findOne({ 
+    email: email,
+    games: {
+        $elemMatch: {
+            gameName: gameName
+        }
+    }
+  });
+}
+
+async function createUserGame(email, gameName, otherPlayer, bb, stackOne, stackTwo) {
+  await userCollection.updateOne(
+    { email: email },
+    { $push: { games: { gameName: gameName, otherPlayer: otherPlayer, bb: bb, stackOne: stackOne, stackTwo: stackTwo } } }
+  );
+}
+
 function getUserByToken(token) {
   return userCollection.findOne({ token: token });
 }
@@ -27,11 +45,15 @@ function getUserByToken(token) {
 async function createUser(email, password) {
   // Hash the password before we insert it into the database
   const passwordHash = await bcrypt.hash(password, 10);
-
+  const currentDate = new Date().toLocaleDateString();
   const user = {
     email: email,
     password: passwordHash,
     token: uuid.v4(),
+    createDate: currentDate,
+    numGamesPlayed: 0,
+    totalMoneyWon: 0.0,
+    games: []
   };
   await userCollection.insertOne(user);
 
@@ -58,4 +80,6 @@ module.exports = {
   createUser,
   addScore,
   getHighScores,
+  getUserGame,
+  createUserGame
 };

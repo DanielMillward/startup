@@ -47,16 +47,16 @@ fetch('http://localhost:3000/api/getprofile', {
         const gameDiv = document.createElement("div"); // Create a new div element
         gameDiv.classList.add("row", "bg-light", "p-3", "mt-3")
         const gameLink = document.createElement("a");
-        gameLink.innerText = game[0];
-        gameLink.href = '/game.html?userData=' + encodeURI(JSON.stringify(game));
+        gameLink.innerText = game.gameName;
+        gameLink.href = '/game.html?hostUser=' + encodeURI(game.thisPlayer) + '&gameName=' + encodeURI(game.gameName);
         const usertext = document.createElement("p");
-        usertext.innerText = "Other Player: " + game[5];
+        usertext.innerText = "Other Player: " + game.otherPlayer;
         const bbtext = document.createElement("p");
-        bbtext.innerText = "Beginning BB: " + game[3];
+        bbtext.innerText = "Beginning BB: " + game.bb;
         const startonetext = document.createElement("p");
-        startonetext.innerText = "Beginning Stack for Player 1: " + game[1];
+        startonetext.innerText = "Beginning Stack for Host: " + game.stackThis * game.bb;
         const starttwotext = document.createElement("p");
-        starttwotext.innerText = "Beginning Stack for Player 1: " + game[2];
+        starttwotext.innerText = "Beginning Stack for Other Player: " + game.stackOther * game.bb;
       
         gameDiv.appendChild(gameLink);
         gameDiv.appendChild(usertext);

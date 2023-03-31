@@ -1,59 +1,23 @@
-//const parsed = JSON.parse(decodeURIComponent(url));
-//console.log(parsed)
-
-// Get the query string from the URL
-const queryString = window.location.search;
-console.log(queryString)
-const userDataString = queryString.substring(10);
-console.log(userDataString)
-const userDataDecoded = decodeURIComponent(userDataString);
-console.log(userDataDecoded)
-const userData = JSON.parse(userDataDecoded);
-
-// data order:
-/*
-0. Game Name
-1. player 1 start stack size
-2. player 2 start stack size
-3. bb size
-4. first player/game maker
-5. second player
-6. player 1 current stack size
-7. player 2 current stack size
-8. player 1 cards (hashed)
-9. player 2 cards (hashed)
-10. table cards
-11. current betting round
-12. actions taken this round
-13. Pot size
-14. Player to move
- */
-
-//Get game data from URL
-const gameName = userData[0];
-const startStackOne = userData[1]; 
-const startStackTwo = userData[2]; 
-const bb = userData[3]; 
-const firstPlayer = userData[4]; 
-const secondPlayer = userData[5];
-
-// get references to page elements
+const urlParams = new URLSearchParams(window.location.search);
+const hostUser = urlParams.get('hostUser');
+const gameName = urlParams.get('gameName');
+console.log(hostUser, gameName);
 document.title = gameName;
-onestack = document.getElementById("oneStack");
-twostack = document.getElementById("twoStack");
-onename = document.getElementById("oneName");
-twoname = document.getElementById("twoName");
-newroundtext = document.getElementById("newround");
-p1c1 = document.getElementById("p1c1");
-p1c2 = document.getElementById("p1c2");
-p2c1 = document.getElementById("p2c1");
-p2c2 = document.getElementById("p2c2");
-currplayer = localStorage.getItem('currUser');
-t1 = document.getElementById("t1");
-t2 = document.getElementById("t2");
-t3 = document.getElementById("t3");
-t4 = document.getElementById("t4");
-t5 = document.getElementById("t5");
+let onestack = document.getElementById("oneStack");
+let twostack = document.getElementById("twoStack");
+let onename = document.getElementById("oneName");
+let twoname = document.getElementById("twoName");
+let newroundtext = document.getElementById("newround");
+let p1c1 = document.getElementById("p1c1");
+let p1c2 = document.getElementById("p1c2");
+let p2c1 = document.getElementById("p2c1");
+let p2c2 = document.getElementById("p2c2");
+let currplayer = localStorage.getItem('currUser');
+let t1 = document.getElementById("t1");
+let t2 = document.getElementById("t2");
+let t3 = document.getElementById("t3");
+let t4 = document.getElementById("t4");
+let t5 = document.getElementById("t5");
 let pot = document.getElementById("pot");
 let tomove = document.getElementById("tomove");
 let nextroundbutton = document.getElementById("nextRound");
@@ -64,385 +28,88 @@ let raiseBBbutton = document.getElementById("raiseBBbutton");
 let foldbutton = document.getElementById("foldbutton");
 let currUser = localStorage.getItem('currUser');
 
+const userToken = getCookieValue("userToken");
 
-onename.textContent = firstPlayer + " (you)";
-twoname.textContent = secondPlayer;
-newRound = false
+window.addEventListener('load', () => {
+  const ws = new WebSocket('ws://localhost:3000/?userToken='+userToken);
 
-//get data
-let users = JSON.parse(localStorage.getItem('users'));
-let userIndex = users.findIndex(function(user) {
-    return user.username === firstPlayer;
+  ws.addEventListener('open', () => {
+    let message = JSON.stringify({
+      "request": "getactions",
+      "data": {
+        "fish": 4
+      }
+    });
+    ws.send(message);
+    console.log(`Sent message: ${message}`);
   });
-console.log(userIndex)
-let gameIndex = users[userIndex].games.findIndex(function(game) {
-return game[0] === gameName;
-});
-console.log("Round start:" + userData)
-var cards = [];
-for (var i = 1; i <= 52; i++) {
-    cards.push(i);
-}
 
+  ws.addEventListener('message', (event) => {
+    const message = event.data;
+    console.log(`Received message: ${message}`);
+  });
 
-// brand new game, initialize stacks/cards
-if (userData.length == 6) {
-    console.log("initiating...");
-    newRound = true
-    userData.push(startStackOne - bb/2);
-    userData.push(startStackTwo - bb);
-    userData.push([cards[0], cards[1]]);
-    userData.push([cards[2], cards[3]]);
-    userData.push([cards[4], cards[5], cards[6]]);
-    userData.push("preflop");
-    userData.push([]);
-    userData.push(bb* 1.5);
-    userData.push(1);
+  ws.addEventListener('close', () => {
+    console.log('WebSocket connection closed');
+  });
 
-    users[userIndex].games[gameIndex] = userData;
-    localStorage.setItem('users', JSON.stringify(users));
-    history.replaceState(null, null, '/game.html?userData=' + encodeURI(JSON.stringify(userData)));
-}
-//on very first page load?
-updateDisplay();
-
-
-console.log(userData[6] + " is 6s");
-
-
-//grey out options depending on turn
-currPlayerName = userData[14] == 1 ? firstPlayer : secondPlayer;
-
-if (currPlayerName != currUser) {
-    checkbutton.disabled = true;
-    betbutton.disabled = true;
-    nextroundbutton.disabled = true;
-    foldbutton.disabled = true;
-    raiseBBbutton.disabled = true;
-    callbutton.disabled = true;
-}
-if (userData[11] == "preflop" && userData[14] == 1) {
-    checkbutton.disabled = true;
-    betbutton.disabled = true;
-    nextroundbutton.disabled = true;
-}
-
-
-//take action
-foldbutton.addEventListener('click', () => {
-    
-    
-    /*
-    0. Game Name
-1. player 1 start stack size
-2. player 2 start stack size
-3. bb size
-4. first player/game maker
-5. second player
-6. player 1 current stack size
-7. player 2 current stack size
-8. player 1 cards (hashed)
-9. player 2 cards (hashed)
-10. table cards
-11. current betting round
-12. actions taken this round
-13. Pot size
-14. Player to move */
-cards = shuffleArray(cards);
-userData[7] += userData[13];
-userData[6] -= bb/2;
-userData[7] -= bb;
-userData[8] = [cards[0], cards[1]];
-userData[9] = [cards[2], cards[3]];
-userData[10] = [cards[4], cards[5], cards[6]];
-userData[11] = "preflop";
-userData[12] = [];
-userData[13] = bb * 1.5;
-userData[14] = 1;
-
-users[userIndex].games[gameIndex] = userData;
-console.log("fold date" + userData);
-localStorage.setItem('users', JSON.stringify(users));
-history.replaceState(null, null, '/game.html?userData=' + encodeURI(JSON.stringify(userData)));
-updateDisplay();
+  ws.addEventListener('error', (event) => {
+    console.error('WebSocket error:', event);
+  });
 });
 
 
 
+//BELOW: Navbar code
+document.addEventListener('DOMContentLoaded', async () => {
+  
 
-
-
-
-
-
-
-
-
-
-//update elements
-function updateDisplay() {
-    onestack.textContent = "$" + userData[6];
-    twostack.textContent = "$" + userData[7];
-    newroundtext.textContent =  userData[11] == "preflop" ? "New Round" : "";
-    pot.textContent = "Pot: $" + userData[13];
-    tomove.textContent = userData[14] == 1 ? firstPlayer + "\'s turn" : secondPlayer + "\'s turn";
-    console.log(userData[11])
-    p1c1src = getCardName(userData[9][0]) 
-    p1c2src = getCardName(userData[9][1]) 
-    p2c1src = getCardName(userData[10][0]) 
-    p2c2src = getCardName(userData[10][1])
-    if (currplayer == firstPlayer || userData[11] == "showdown") {
-        p1c1.src = "rec\\English_pattern_" + getCardName(userData[8][0]) + ".svg" 
-        p1c2.src = "rec\\English_pattern_" + getCardName(userData[8][1]) + ".svg" 
-    } else {
-        p1c1.src = "rec\\card_back.svg" 
-        p1c2.src = "rec\\card_back.svg" 
-    }
-    
-    if (currplayer == secondPlayer || userData[11] == "showdown") {
-        p2c1.src = "rec\\English_pattern_" + getCardName(userData[9][0]) + ".svg" 
-        p2c2.src = "rec\\English_pattern_" + getCardName(userData[9][1]) + ".svg" 
-    } else {
-        p2c1.src = "rec\\card_back.svg" 
-        p2c2.src = "rec\\card_back.svg" 
-    }
-    t1.src = "rec\\card_back.svg"
-    t2.src = "rec\\card_back.svg"
-    t3.src = "rec\\card_back.svg"
-    t4.src = "rec\\card_back.svg"
-    t5.src = "rec\\card_back.svg"
-    console.log("11"+userData[11])
-    if (userData[11] != "preflop") {
-        t1.src = "rec\\English_pattern_" + getCardName(userData[10][0]) + ".svg" 
-        t2.src = "rec\\English_pattern_" + getCardName(userData[10][1]) + ".svg" 
-        t3.src = "rec\\English_pattern_" + getCardName(userData[10][2]) + ".svg" 
-    }
-    if (userData[11] != "preflop" && userData[11] != "flop") {
-        t4.src = "rec\\English_pattern_" + getCardName(userData[10][3]) + ".svg" 
-    }
-    if (userData[11] != "preflop" && userData[11] != "flop" && userData[11] != "turn") {
-        t4.src = "rec\\English_pattern_" + getCardName(userData[10][4]) + ".svg" 
-    }
-}
-
-//shuffle algo
-function shuffleArray(array) {
-    for (var i = array.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    }
-    return array;
+  let authenticated = false;
+  const userName = getCookieValue("userName");
+  console.log(userName);
+  if (userName) {
+    document.querySelector('#playerName').textContent = userName;
+    setDisplay('loginButton', 'none');
+    setDisplay('signupButton', 'none');
+    setDisplay('profileButton', 'block');
+    setDisplay('logoutButton', 'block');
+    setDisplay('greeting', 'block');
+    setDisplay('whylol', 'none');
+  } else {
+    setDisplay('loginButton', 'block');
+    setDisplay('signupButton', 'block');
+    setDisplay('profileButton', 'none');
+    setDisplay('logoutButton', 'none');
+    setDisplay('greeting', 'none');
+    setDisplay('maincontent', 'none');
   }
 
-//get card name
-function getCardName(cardNum) {
-    output = "";
-    switch (cardNum) {
-        case 0:
-          output = 'ace_of_spades';
-          break;
-        case 1:
-          output = '2_of_spades';
-          break;
-        case 2:
-          output = '3_of_spades';
-          break;
-        case 3:
-          output = '4_of_spades';
-          break;
-        case 4:
-          output = '5_of_spades';
-          break;
-        case 5:
-          output = '6_of_spades';
-          break;
-        case 6:
-          output = '7_of_spades';
-          break;
-        case 7:
-          output = '8_of_spades';
-          break;
-        case 8:
-          output = '9_of_spades';
-          break;
-        case 9:
-          output = '10_of_spades';
-          break;
-        case 10:
-          output = 'jack_of_spades';
-          break;
-        case 11:
-          output = 'queen_of_spades';
-          break;
-        case 12:
-          output = 'king_of_spades';
-          break;
-        case 13:
-          output = 'ace_of_hearts';
-          break;
-        case 14:
-          output = '2_of_hearts';
-          break;
-        case 15:
-          output = '3_of_hearts';
-          break;
-        case 16:
-          output = '4_of_hearts';
-          break;
-        case 17:
-          output = '5_of_hearts';
-          break;
-        case 18:
-          output = '6_of_hearts';
-          break;
-        case 19:
-          output = '7_of_hearts';
-          break;
-        case 20:
-          output = '8_of_hearts';
-          break;
-        case 21:
-          output = '9_of_hearts';
-          break;
-        case 22:
-          output = '10_of_hearts';
-          break;
-        case 23:
-          output = 'jack_of_hearts';
-          break;
-        case 24:
-          output = 'queen_of_hearts';
-          break;
-        case 25:
-          output = 'king_of_hearts';
-          break;
-        case 26:
-          output = 'ace_of_clubs';
-          break;
-        case 27:
-          output = '2_of_clubs';
-          break;
-        case 28:
-          output = '3_of_clubs';
-          break;
-        case 29:
-          output = '4_of_clubs';
-          break;
-        case 30:
-          output = '5_of_clubs';
-          break;
-        case 31:
-          output = '6_of_clubs';
-          break;
-        case 32:
-          output = '7_of_clubs';
-          break;
-        case 33:
-          output = '8_of_clubs';
-          break;
-        case 34:
-          output = '9_of_clubs';
-          break;
-        case 35:
-          output = '10_of_clubs';
-          break;
-        case 36:
-          output = 'jack_of_clubs';
-          break;
-        case 37:
-          output = 'queen_of_clubs';
-          break;
-        case 38:
-          output = 'king_of_clubs';
-          break;
-        case 39:
-          output = 'ace_of_diamonds';
-          break;
-        case 40:
-          output = '2_of_diamonds';
-          break;
-        case 41:
-          output = '3_of_diamonds';
-          break;
-        case 42:
-        output = '4_of_diamonds';
-        break;
-        case 43:
-        output = '5_of_diamonds';
-        break;
-        case 44:
-        output = '6_of_diamonds';
-        break;
-        case 45:
-        output = '7_of_diamonds';
-        break;
-        case 46:
-        output = '8_of_diamonds';
-        break;
-        case 47:
-        output = '9_of_diamonds';
-        break;
-        case 48:
-        output = '10_of_diamonds';
-        break;
-        case 49:
-        output = 'jack_of_diamonds';
-        break;
-        case 50:
-        output = 'queen_of_diamonds';
-        break;
-        case 51:
-        output = 'king_of_diamonds';
-        break;
-        default:
-        output = 'Invalid card number';
-    }
-    return output;
+
+});
+
+function getCookieValue(cookieName) {
+  const cookies = document.cookie.split("; ");
+for (let i = 0; i < cookies.length; i++) {
+  const parts = cookies[i].split("=");
+  if (decodeURIComponent(parts[0]) === cookieName) {
+    const value = decodeURIComponent(parts[1]);
+    return value;
+  }
+}
+  return undefined;
 }
 
-
-// Get the navbar elements
-const anonButtons = document.querySelectorAll('.anonButton');
-const loginButton = anonButtons[0].querySelector('button');
-const signupButton = anonButtons[1].querySelector('button');
-
-// Check if the user is logged in
-if (localStorage.getItem('currUser')) {
-  anonButtons.forEach(button => button.style.display = 'none');
-  const navbar = document.querySelector('.navbar-nav');
-  //make profile button
-  const profileButton = document.createElement('button');
-  profileButton.type = 'button';
-  profileButton.classList.add('btn', 'btn-dark', 'rounded-pill', 'py-0');
-  profileButton.innerText = 'View Profile';
-  profileButton.addEventListener('click', () => {
-    window.location.href = "profile.html";
-  });
-  const profileListItem = document.createElement('li');
-  profileListItem.classList.add('nav-item', 'p-2', 'anonButton');
-  profileListItem.appendChild(profileButton);
-  navbar.appendChild(profileListItem);
-
-  // Make sign out button
-  const signoutButton = document.createElement('button');
-  signoutButton.type = 'button';
-  signoutButton.classList.add('btn', 'btn-dark', 'rounded-pill', 'py-0');
-  signoutButton.innerText = 'Sign Out';
-  signoutButton.addEventListener('click', () => {
-    localStorage.removeItem('currUser');
-    window.location.href = "index.html";
-  });
-  const signoutListItem = document.createElement('li');
-  signoutListItem.classList.add('nav-item', 'p-2', 'anonButton');
-  signoutListItem.appendChild(signoutButton);
-  
-  navbar.appendChild(signoutListItem);
-
-
-} else {
-  // Show the "login" and "signup" buttons
-  loginButton.style.display = 'block';
-  signupButton.style.display = 'block';
+function setDisplay(controlId, display) {
+  const playControlEl = document.querySelector(`#${controlId}`);
+  if (playControlEl) {
+    playControlEl.style.display = display;
+  }
 }
+
+const signoutButton = document.getElementById('logoutButton');
+
+signoutButton.addEventListener('click', () => {
+  document.cookie = "userToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "userName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  window.location.href = "index.html";
+});

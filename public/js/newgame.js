@@ -1,103 +1,109 @@
-document.getElementById("noUser").style.display = "none"; 
-const currUser = localStorage.getItem('currUser');
-console.log("Curr user is " + currUser)
-
-// if no current user, don't display page
-if (!currUser) {
-document.getElementById("noUser").style.display = "block"; 
-document.getElementById("profileDiv").style.display = "none"; 
-} else {
-//Check all fields filled out
-
-
 const gameNameInput = document.getElementById('gameName');
 const otherPlayerInput = document.getElementById('otherPlayer');
 const bigBlindInput = document.getElementById('bigBlind');
 const startingStackOneInput = document.getElementById('stackOne');
 const startingStackTwoInput = document.getElementById('stackTwo');
-const signupBtn = document.getElementById('submitButton');
+const submitButton = document.getElementById('submitButton');
 
-//user logged in and all fields made, time to add the game to the user list
-const users = JSON.parse(localStorage.getItem("users"));
-const currentUser = users.find(user => user.username === currUser);
-
-if (!currentUser) {
-    document.getElementById("noUser").style.display = "block"; 
-    document.getElementById("newGameDiv").style.display = "none"; 
-}
-
-
-signupBtn.addEventListener('click', (event) => {
-    event.preventDefault(); // Needed for some reason
-
-    console.log('Game Name: ', gameNameInput.value);
-    console.log('Big Blind: ', bigBlindInput.value);
-    console.log('Starting Stack for Player 1: ', startingStackOneInput.value);
-    console.log('Starting Stack for Player 2: ', startingStackTwoInput.value);
-
-
-    if (gameNameInput.value && otherPlayerInput.value && !isNaN(bigBlindInput.value) && !isNaN(startingStackOneInput.value) && !isNaN(startingStackTwoInput.value)) {
-      bb = parseInt(bigBlindInput.value)
-      stackOne = parseInt(startingStackOneInput.value)
-      stackTwo = parseInt(startingStackTwoInput.value)
-      let alreadyExists = false;
-      for (var i = 0; i < currentUser.games.length; i++) {
-        if (currentUser.games[i][0] == gameNameInput.value) {
-            alert("Game of same name already exists.");
-            alreadyExists = true;
-        }
-        }
-        if (! alreadyExists) {
-            gameArray = [gameNameInput.value, stackOne, stackTwo, bb, currUser, otherPlayerInput.value]
-
-        // Update games of user
-        tempGames = currentUser.games;
-        tempGames.push(gameArray);
-        currentUser.games = tempGames
-        let updatedUsers = JSON.stringify(users);
-        localStorage.setItem('users', updatedUsers);
-
-        window.location.href = '/game.html?userData=' + encodeURI(JSON.stringify(gameArray));
-        }
+submitButton.addEventListener('click', (event) => {
+  submitButton.disabled = true;
+  let otherPlayer = otherPlayerInput.value;
+  let gameName = gameNameInput.value;
+  let bb = bigBlindInput.value;
+  let startingStackOne = startingStackOneInput.value;
+  let startingStackTwo = startingStackTwoInput.value;
+  console.log(gameName + otherPlayer + bb + startingStackOne + startingStackTwo);
+  event.preventDefault(); // Needed for some reason
+  fetch('http://localhost:3000/api/addgame', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    email: getCookieValue("userName"),
+    gameName: gameName,
+    otherPlayer: otherPlayer,
+    bb: bb,
+    stackOne: startingStackOne,
+    stackTwo: startingStackTwo
+  })
+  })
+  .then(response => {
+    if (response.status === 200) {
+      // Handle a successful response with status code 200
+      console.log(response.json());
+      //window.location.href = '/profile.html';
+    } else if (response.status === 422) {
+      // Handle an unauthorized response with status code 401
+      alert("Incomplete/incorrect data");
+    }  else if (response.status === 401) {
+      // Handle an unauthorized response with status code 401
+      alert("username/password not in DB");
+    }  else if (response.status === 409) {
+      // Handle an unauthorized response with status code 401
+      alert("Game with this name already exists");
     } else {
-      alert("Please fill in all fields, with the big blind/stacks being a number.");
+      // Handle other status codes
+      throw new Error('Something went wrong');
     }
+  })
+  .then(data => console.log(data))
+  .catch(error => console.error(error))
+  .finally(() => {
+    // Re-enable the button
+    submitButton.disabled = false;
   });
+});
 
+
+//BELOW: Navbar code
+document.addEventListener('DOMContentLoaded', async () => {
+  let authenticated = false;
+  const userName = getCookieValue("userName");
+  console.log(userName);
+  if (userName) {
+    document.querySelector('#playerName').textContent = userName;
+    setDisplay('loginButton', 'none');
+    setDisplay('signupButton', 'none');
+    setDisplay('profileButton', 'block');
+    setDisplay('logoutButton', 'block');
+    setDisplay('greeting', 'block');
+    setDisplay('whylol', 'none');
+  } else {
+    setDisplay('loginButton', 'block');
+    setDisplay('signupButton', 'block');
+    setDisplay('profileButton', 'none');
+    setDisplay('logoutButton', 'none');
+    setDisplay('greeting', 'none');
+    setDisplay('maincontent', 'none');
+  }
+
+
+});
+
+function getCookieValue(cookieName) {
+  const cookies = document.cookie.split("; ");
+for (let i = 0; i < cookies.length; i++) {
+  const parts = cookies[i].split("=");
+  if (decodeURIComponent(parts[0]) === cookieName) {
+    const value = decodeURIComponent(parts[1]);
+    return value;
+  }
+}
+  return undefined;
 }
 
-
-
-
-// Get the navbar elements
-const anonButtons = document.querySelectorAll('.anonButton');
-const loginButton = anonButtons[0].querySelector('button');
-const signupButton = anonButtons[1].querySelector('button');
-
-// Check if the user is logged in
-if (currUser) {
-    console.log("theres a user")
-  anonButtons.forEach(button => button.style.display = 'none');
-  // Make sign out button
-  const signoutButton = document.createElement('button');
-  signoutButton.type = 'button';
-  signoutButton.classList.add('btn', 'btn-dark', 'rounded-pill', 'py-0');
-  signoutButton.innerText = 'Sign Out';
-
-  signoutButton.addEventListener('click', () => {
-    localStorage.removeItem('currUser');
-    window.location.href = "index.html";
-  });
-  // Add the "sign out" button to the navbar
-  const signoutListItem = document.createElement('li');
-  signoutListItem.classList.add('nav-item', 'p-2', 'anonButton');
-  signoutListItem.appendChild(signoutButton);
-  const navbar = document.querySelector('.navbar-nav');
-  navbar.appendChild(signoutListItem);
-
-} else {
-  // user not logged in
-  loginButton.style.display = 'block';
-  signupButton.style.display = 'block';
+function setDisplay(controlId, display) {
+  const playControlEl = document.querySelector(`#${controlId}`);
+  if (playControlEl) {
+    playControlEl.style.display = display;
+  }
 }
 
+const signoutButton = document.getElementById('logoutButton');
+
+signoutButton.addEventListener('click', () => {
+  document.cookie = "userToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "userName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  window.location.href = "index.html";
+});

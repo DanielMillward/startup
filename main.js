@@ -67,6 +67,7 @@ apiRouter.post('/auth/create', async (req, res) => {
 
 // Login
 apiRouter.post('/auth/login', async (req, res) => {
+    console.log(req.body);
     if (!bothUserNameAndPasswordPresent(req)) {
         res.status(413).send({msg: 'either username or password not here'});
     } else {
@@ -117,11 +118,14 @@ apiRouter.get('/getprofile', async (req, res) => {
 //add new game to user profile
 apiRouter.post('/addgame', async (req, res) => {
     if (req.cookies.userToken && req.body) {
-        if (!req.body.gameName || !req.body.otherPlayer || !req.body.bb || !req.body.stackOne || !req.body.stackTwo) {
+        console.log(req.body);
+        if (!req.body.email || !req.body.gameName || !req.body.otherPlayer || !req.body.bb || !req.body.stackOne || !req.body.stackTwo) {
+            console.log("missing dat");
             res.status(422).send({ msg: 'Incomplete data' });
             return;
         }
         if (isNaN(req.body.bb) || isNaN(req.body.stackOne) ||isNaN(req.body.stackTwo)) {
+            console.log("non numbers");
             res.status(422).send({ msg: 'bb, stackone, or stacktwo not a number' });
             return;
         }
@@ -151,6 +155,7 @@ wss.on('connection', async (ws, req) => {
     //authenticate web socket request
   const queryObject = url.parse(req.url, true).query;
   console.log('WebSocket client connected');
+  ws.send("connection made!");
   if (!queryObject) {
     console.log('User has no query params');
     ws.terminate();
@@ -174,6 +179,7 @@ wss.on('connection', async (ws, req) => {
   
   //use userobject for info
   ws.on('message', async (message) => {
+    console.log('got message!' + message);
     try {
         msg = JSON.parse(message);
     } catch {

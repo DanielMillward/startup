@@ -71,10 +71,11 @@ async function createUserGame(email, gameName, otherPlayer, bb, stackOne, stackT
         playerOne: "this",
         playerTwo: "other",
         betsThisRound: [],
+        pot: bb * 1.5,
         thisPlayerCards: [cards[0], cards[1]],
         otherPlayerCards: [cards[2], cards[3]],
         tableCards: [cards[4], cards[5],cards[6],cards[7],cards[8]]},
-        pot: 0 } }
+        } }
   );
 }
 

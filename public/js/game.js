@@ -51,6 +51,10 @@ window.addEventListener('load', () => {
             pot: currGame.pot */
     p1c1.src = "rec\\English_pattern_" + getCardName(message.playerCards[0]) + ".svg" 
     p1c2.src = "rec\\English_pattern_" + getCardName(message.playerCards[1]) + ".svg" 
+    onestack.textContent = "$" + message.playerStack;
+    twostack.textContent = "$" + message.oppStack;
+    pot.textContent = "$" + message.pot;
+    tomove.textContent = message.currPlayer + "\'s turn";
   });
 
   ws.addEventListener('close', () => {

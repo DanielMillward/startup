@@ -224,9 +224,16 @@ wss.on('connection', async (ws, req) => {
         currGame = findGameFromArray(currGame.games, msg.data.gameName);
         let playerStack = 0;
         let oppStack = 0;
+        let currPlayer = "";
+        if ((currGame.whoseTurn == 1 && currGame.playerOne === "this") || (currGame.whoseTurn == 2 && currGame.playerTwo === "this")) {
+            currPlayer = currGame.thisPlayer;
+        } else {
+            currPlayer = currGame.otherPlayer;
+        }
         if (userObject.email == currGame.thisPlayer) {
             playerStack = currGame.stackThis;
             oppStack = currGame.stackOther;
+            
         } else {
             playerStack = currGame.stackOther;
             oppStack = currGame.stackThis;
@@ -236,7 +243,8 @@ wss.on('connection', async (ws, req) => {
             "tableCards": [],
             playerStack: playerStack,
             oppStack: oppStack,
-            pot: currGame.pot
+            pot: currGame.pot,
+            currPlayer: currPlayer
         });
         ws.send(message);
         console.log(`Sent message: ${message}`);

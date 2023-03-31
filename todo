@@ -1,9 +1,7 @@
-Add other user box in new game maker - DONE
-if not one of the users, disable all boxes forever
-add hash of each player's cards to url as first move
-add current betting round and whose turn it is also? and number of hands played so far
-also add actions taken that round so far, start as empty array
-based on that info, see what moves are allowed, enable those boxes
-if not your turn, disable all boxes
-if (terminal condition of hand), then display new round?
+Add 3rd party API stuff
+notes in readme
 
+when make new game, redirect to that new game
+Disable/enable buttons
+send action when press button, also recieve update
+If are other player, have same functionality

@@ -31,10 +31,31 @@ function getUserGame(email, gameName) {
   });
 }
 
+async function updateStack(currGame, playerToChange, value, subOrAdd) {
+  return;
+}
+
 async function createUserGame(email, gameName, otherPlayer, bb, stackOne, stackTwo) {
   await userCollection.updateOne(
     { email: email },
-    { $push: { games: { gameName: gameName, otherPlayer: otherPlayer, bb: bb, stackOne: stackOne, stackTwo: stackTwo } } }
+    { $push: { 
+      games: { 
+        gameName: gameName, 
+        thisPlayer: email,
+        otherPlayer: otherPlayer, 
+        bb: bb, 
+        stackThis: stackOne * bb, 
+        stackOther: stackTwo * bb,
+        startStackThis: stackOne * bb,
+        startStackOther: stackTwo * bb,
+        currRound: "preflop",
+        roundBetAmountThis: bb/2,
+        roundBetAmountOther: bb,
+        whoseTurn: 1,
+        hasBeenABet: false,
+        playerOne: "this",
+        playerTwo: "other",
+        betsThisRound: []} } }
   );
 }
 

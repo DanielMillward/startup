@@ -60,7 +60,7 @@ apiRouter.post('/auth/create', async (req, res) => {
             // Set the cookie
             res.cookie("userToken",user.token);
             res.cookie("userName", user.email);
-            res.status(422).send({msg: 'need to redirect to profile'});
+            res.send({msg: 'need to redirect to profile'});
           }
     }
   });
@@ -75,7 +75,7 @@ apiRouter.post('/auth/login', async (req, res) => {
             if (await bcrypt.compare(req.body.password, user.password)) {
                 res.cookie("userToken", user.token);
                 res.cookie("userName", user.email);
-                res.status(422).send({msg: 'need to redirect to profile'});
+                res.send({msg: 'need to redirect to profile'});
                 return;
             }
         }
@@ -107,6 +107,8 @@ apiRouter.get('/getprofile', async (req, res) => {
             return;
         } else {
             console.log("no matching user found");
+            res.status(422).send({ msg: 'No user found' });
+            return;
         }
     }
     res.status(401).send({ msg: 'Unauthorized' });
@@ -183,20 +185,38 @@ wss.on('connection', async (ws, req) => {
         return;
     }
     //update and broadcast game state (websocket) updates both game and users datas
+    
+    
     if (msg.request === "update") {
+        if (!msg.data.email || !msg.data.gameName || !msg.data.action.player || !msg.data.action.actionName || !msg.data.action.value) {
+            ws.send(`please give email and gameName`);
+            return;
+        }
+        let currGame = await DB.getUserGame(msg.data.email, msg.data.gameName);
+        currGame = findGameFromArray(currGame.games, msg.data.gameName);
+        if (!isValidAction(currGame, msg.data.action)) {
+            ws.send(`please give valid action`);
+            return;
+        }
+        let newGame = setAndGetUpdatedGame(currGame, msg.data.action);
+        let gameDisplay = getGameDisplay(newGame);
+        ws.send(gameDisplay);
+        return;
+    }
+
+    //get legal actions (websocket)
+    if (msg.request === "getactions") {
         if (!msg.data.email || !msg.data.gameName) {
             ws.send(`please give email and gameName`);
             return;
         }
         let currGame = await DB.getUserGame(msg.data.email, msg.data.gameName);
-        console.log("currgame " + JSON.stringify(currGame));
         currGame = findGameFromArray(currGame.games, msg.data.gameName);
-        console.log("currgame " + JSON.stringify(currGame));
-        ws.send(JSON.stringify(currGame));
+        const actions = getLegalActions(currGame);
+        console.log("all actions: " + JSON.stringify(actions));
+        ws.send(actions);
         return;
     }
-
-    //get legal actions (websocket)
 
     ws.send(`You said: ${message}`);
   });
@@ -218,4 +238,115 @@ function findGameFromArray(gameArray, gameName) {
         }
       }
       return undefined;
+}
+
+function isValidAction(gamestate, action) {
+    //These are all viable bet amounts for any positive value of extra.
+    //min(max(0, oppPlayer.betamount - currplayer.betamount) + (0 OR max(BB, extra)), currplayer.stack)
+
+    //if its not your turn, then don't.
+    if (whoseTurn !== action.player) {
+        return false;
+    }
+
+    //check if action is in legal actions (both name and value between min/max). 
+    const validActions = getLegalActions(gamestate);
+    for (let i = 0; i < validActions.length; i++) {
+        let validAction = validActions[i];
+        if ((validAction.actionName === action.actionName) || 
+             (action.actionName === "bet" && validAction.actionName ==="betlower") ||
+             (action.actionName === "raise" && validAction.actionName ==="raiselower")) {
+                if (!action.value || (action.value > validAction.value)) {
+                    return true;
+                }
+             }
+    }
+    return false;
+}
+
+function getLegalActions(gameState) {
+    ////min(max(0, oppPlayer.betamount - currplayer.betamount) + (0 OR max(BB, extra)), currplayer.stack)
+    //if currRound = showdown, return None
+    if (gameState.currRound === "showdown") {
+        return [];
+    }
+    output = [];
+    
+    //add fold
+    output.push({actionName: "fold"});
+    //add all-in
+    output.push({actionName: "allin"});
+
+    //if both bet sizes are 0 and its first turn, or its the option 
+    //(sizes are SB and BB, for preflop is not the first turn {the sb playing is the first turn}),
+    // then add check.
+    if ((gameState.roundBetAmountThis == 0) && (gameState.roundBetAmountOther == 0) && !gameState.hasBeenABet) {
+        output.push({actionName: "check"});
+    } else if ((gameState.currRound === "preflop") && ((gameState.roundBetAmountThis == gameState.bb) && (gameState.roundBetAmountOther == gameState.bb) ) && gameState.hasBeenABet) {
+        output.push({actionName: "check"});
+    }
+
+    let oppBetAmount = 0;
+    let currBetAmount = 0;
+    let currPlayerStack = 0;
+
+    if ((gameState.whoseTurn == 1 && gameState.playerOne === "this") || (gameState.whoseTurn == 2 && gameState.playerTwo === "this")) {
+        oppBetAmount = gameState.roundBetAmountOther;
+        currBetAmount = gameState.roundBetAmountThis;
+        currPlayerStack = gameState.stackThis;
+    } else {
+        oppBetAmount = gameState.roundBetAmountThis;
+        currBetAmount = gameState.roundBetAmountOther;
+        currPlayerStack = gameState.stackOther;
+    }
+
+    //check if can call, but not raise
+    const callAmount = oppBetAmount - currBetAmount
+    if ((currPlayerStack - callAmount) > 0) {
+        output.push({actionName: "call"});
+    }
+
+    // for bets/raises
+    if (!gameState.hasBeenABet && (currPlayerStack - callAmount - gameState.bb) > 0) {
+        // add bet ranges
+        output.push({actionName: "betlower", value: gameState.bb});
+        output.push({actionName: "bethigher", value: currPlayerStack - callAmount});
+    } else if (gameState.hasBeenABet && (currPlayerStack - callAmount - gameState.bb) > 0) {
+        // add raise ranges
+        output.push({actionName: "raiselower", value: gameState.bb});
+        output.push({actionName: "raisehigher", value: currPlayerStack - callAmount});
+    }
+
+    return output;
+}
+
+function setAndGetUpdatedGame(currGame, action) {
+    currGame.betsThisRound.push(action);
+    if (action.player == currGame.thisPlayer) {
+        //if the acting player is thisplayer
+        if (action.actionName != "fold" && action.actionName != "check") {
+            DB.updateStack(currGame, "thisPlayer", action.value, "subtract");
+        }
+    } else {
+        //they're otherplayer
+
+    }
+    let numChecks = 0;
+    let containsCall = false;
+    for (let i = 0; i < currGame.betsThisRound.length; i++) {
+        if (currGame.betsThisRound[i].actionName === "check") {
+            numChecks += 1;
+        }
+        if (currGame.betsThisRound[i].actionName === "call") {
+            containsCall = true;
+        }
+    }
+    
+    if (numChecks >= 2 || containsCall) {
+
+    }
+}
+
+function getGameDisplay(game) {
+
 }

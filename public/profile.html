@@ -26,15 +26,21 @@
           <!--Stuff that gets collapsed-->
           <div class="collapse navbar-collapse" id="navbarContent">
             <!--ms-auto means, I call dibs on being on the right. Everyone else is left-aligned.-->
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item p-2 anonButton">
-                       
-                          <button type="button" class="btn btn-light border border-dark rounded-pill py-0"> <a class="nav-link text-dark" href="login.html">Login</a></button>
-                    </li>
-                    <li class="nav-item p-2 anonButton">
-                      <button type="button" class="btn btn-dark rounded-pill py-0"> <a class="nav-link text-light" href="signup.html">Sign Up</a></button>
-                    </li>
-                </ul>
+            <ul class="navbar-nav ms-auto">
+              <p class="navbar-brand font-weight-bold my-2" id="greeting" style="display: none;">Hello, <span id="playerName">user</span></p>
+                <li class="nav-item p-2 anonButton" id="loginButton">
+                      <button type="button" class="btn btn-light border border-dark rounded-pill py-0"> <a class="nav-link text-dark" href="login.html">Login</a></button>
+                </li>
+                <li class="nav-item p-2 anonButton" id="signupButton" style="display: none;">
+                  <button type="button" class="btn btn-dark rounded-pill py-0"> <a class="nav-link text-light" href="signup.html">Sign Up</a></button>
+                </li>
+                <li class="nav-item p-2 anonButton" id="profileButton" style="display: none;">
+                  <button type="button" class="btn btn-light border border-dark rounded-pill py-0"> <a class="nav-link text-dark" href="profile.html">Profile</a></button>
+                </li>
+                <li class="nav-item p-2 anonButton" id="logoutButton" style="display: none;">
+                  <button type="button" class="btn btn-dark rounded-pill py-0"> <a class="nav-link text-light" href="/">Logout</a></button>
+                </li>
+            </ul>
             </div>
       </div>
     </nav>
@@ -45,13 +51,13 @@
               <img class="img-fluid customClass" id="profilePic"></img>
             </div>
             <div class="col-lg-8">
-              <h1 id="username">MyUserName</h1>
-              <p>Account created on <span id="accountDate">1/1/1999</span></p>
+              <h1 id="username">Loading...</h1>
+              <p>Account created on <span id="accountDate">Loading...</span></p>
               </br>
               <h3>Games Played:</h3>
-              <p id="gamesPlayed">23</p>
+              <p id="gamesPlayed">Loading...</p>
               <h3>Total Money Won:</h3>
-              <p id="totalMoneyWon">$225</p>
+              <p>$<span id="totalMoneyWon">Loading...</span></p>
             </div>
         </div>
         <div class="row bg-light p-3 mt-3">

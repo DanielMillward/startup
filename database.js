@@ -35,8 +35,23 @@ async function updateStack(currGame, playerToChange, value, subOrAdd) {
   return;
 }
 
+function shuffleArray(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+}
+
 async function createUserGame(email, gameName, otherPlayer, bb, stackOne, stackTwo) {
-  await userCollection.updateOne(
+  var cards = [];
+  for (var i = 1; i <= 52; i++) {
+      cards.push(i);
+  }
+  cards = shuffleArray(cards);
+  return await userCollection.updateOne(
     { email: email },
     { $push: { 
       games: { 
@@ -55,7 +70,11 @@ async function createUserGame(email, gameName, otherPlayer, bb, stackOne, stackT
         hasBeenABet: false,
         playerOne: "this",
         playerTwo: "other",
-        betsThisRound: []} } }
+        betsThisRound: [],
+        thisPlayerCards: [cards[0], cards[1]],
+        otherPlayerCards: [cards[2], cards[3]],
+        tableCards: [cards[4], cards[5],cards[6],cards[7],cards[8]]},
+        pot: 0 } }
   );
 }
 

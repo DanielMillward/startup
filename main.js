@@ -155,7 +155,6 @@ wss.on('connection', async (ws, req) => {
     //authenticate web socket request
   const queryObject = url.parse(req.url, true).query;
   console.log('WebSocket client connected');
-  ws.send("connection made!");
   if (!queryObject) {
     console.log('User has no query params');
     ws.terminate();
@@ -176,6 +175,11 @@ wss.on('connection', async (ws, req) => {
     console.log('User is not authenticated - no token detected');
     ws.terminate();
   }
+
+  
+  //send initial game state
+  
+
   
   //use userobject for info
   ws.on('message', async (message) => {
@@ -218,9 +222,24 @@ wss.on('connection', async (ws, req) => {
         }
         let currGame = await DB.getUserGame(msg.data.email, msg.data.gameName);
         currGame = findGameFromArray(currGame.games, msg.data.gameName);
-        const actions = getLegalActions(currGame);
-        console.log("all actions: " + JSON.stringify(actions));
-        ws.send(actions);
+        let playerStack = 0;
+        let oppStack = 0;
+        if (userObject.email == currGame.thisPlayer) {
+            playerStack = currGame.stackThis;
+            oppStack = currGame.stackOther;
+        } else {
+            playerStack = currGame.stackOther;
+            oppStack = currGame.stackThis;
+        }
+        let message = JSON.stringify({
+            "playerCards": [currGame.thisPlayerCards[0], currGame.thisPlayerCards[1]],
+            "tableCards": [],
+            playerStack: playerStack,
+            oppStack: oppStack,
+            pot: currGame.pot
+        });
+        ws.send(message);
+        console.log(`Sent message: ${message}`);
         return;
     }
 

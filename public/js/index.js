@@ -27,6 +27,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     setDisplay('logoutButton', 'none');
     setDisplay('greeting', 'none');
   }
+
+  const url = "https://api.quotable.io/random";
+fetch(url)
+  .then((x) => x.json())
+  .then((response) => {
+    document.getElementById("quoteBlock").textContent = response.content;
+    document.getElementById("authorBlock").textContent = response.author;
+  });
+
 });
 
 

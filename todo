@@ -1,7 +1,6 @@
 Add 3rd party API stuff
 notes in readme
 
-when make new game, redirect to that new game
 Disable/enable buttons
 send action when press button, also recieve update
 If are other player, have same functionality

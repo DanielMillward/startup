@@ -32,7 +32,7 @@ submitButton.addEventListener('click', (event) => {
     if (response.status === 200) {
       // Handle a successful response with status code 200
       console.log(response.json());
-      //window.location.href = '/profile.html';
+      window.location.href = '/game.html?hostUser='+getCookieValue("userName")+'&gameName='+gameName;
     } else if (response.status === 422) {
       // Handle an unauthorized response with status code 401
       alert("Incomplete/incorrect data");

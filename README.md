@@ -46,7 +46,18 @@ apiRouter.get('/', loggedInMiddleware, (req, res) => {
 
 - When developing the WebSocket part of the app, I realized that the websocket connection is just a socket connection - obvious in hindsight, I know. I learned a bit about sockets in my systems programming class, and so making the connection made thigns a bit clearer. I imagine it as, the server checks the socket "mailbox" for any messages, and can send messages back.
 
-- 
+- For fetch requests, it's a lot simpler just to just include the relative path instead of the full startup.coolpoker.click bit. It makes transitioning from development to production a lot easier:
+
+```javascript
+const response = await fetch(`/api/user/${email}`);
+  if (response.status === 200) {
+    return response.json();
+  }
+```
+
+- I learned I really like MongoDB, since it's much easier to quickly iterate and change things as opposed to a regular SQL database. Instead of having to UPDATE with a new column every time I realized I needed a new attribute, I just added it to the request and MongoDB handles it like a champ! One issue I did face was MongoDB acting weird when accessing a collection that didn't exist, but that's understandable.
+
+- I had watched a video on test driven development that mentioned I should try and put as much logic server-side as I can. While I didn't follow TDD for this project, putting logic for everything from authentication to finding which actions are valid on the server made it easier to debug and find problems.
 
 ## Simon Websocket - Notes
 

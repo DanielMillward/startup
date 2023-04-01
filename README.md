@@ -15,6 +15,39 @@ Key features
 - User profile page has various statistics, such as games played and money won
 - Games can be shared with a URL
 
+## Startup Service - Notes
+
+what you have learned using services, node.js, mongodb, authentication, and webSockets:
+This has been quite the enlightening experience for me, developing this app. It's still not nearly as polished as I'd like - the actual game code is quite finicky - but I very much enjoyed working on it so far. Some important things I've learned:
+
+- Make sure to have all the dependencies in the package.json file. For some reason Express wasn't there originally, so I had some issues getting the app to work in the production environment.
+
+- You can do middleware for routers. For example, I had wanted to make sure the user was logged in before accessing certain pages, such as the profile page. Otherwise, I would like it to redirect. This was accomplished with
+
+```javascript
+const loggedInMiddleware = async (req, res, next) => {
+    if (req.cookies.userToken) {
+        const user = await DB.getUserByToken(req.cookies.userToken);
+        if (user) {
+            console.log("got user...");
+            res.status(422).send({msg: 'need to redirect to profile'});
+            return;
+        } else {
+            console.log("no matching user found");
+        }
+    }
+    next();
+}
+...
+apiRouter.get('/', loggedInMiddleware, (req, res) => {
+    res.send('welcome to a simple HTTP cookie server');
+});
+```
+
+- When developing the WebSocket part of the app, I realized that the websocket connection is just a socket connection - obvious in hindsight, I know. I learned a bit about sockets in my systems programming class, and so making the connection made thigns a bit clearer. I imagine it as, the server checks the socket "mailbox" for any messages, and can send messages back.
+
+- 
+
 ## Simon Websocket - Notes
 
 I had never really looked at what Websocket actually was, and so it seemed pretty cool after looking at the class's articles. I had always thought that sending full-fledged HTTP requests either way was the only real way to communicate, so finding out there were alternatives was fun. It is, in my mind, a very similar setup to a normal express server, except you do it for both the client code and the server code. That is, you tell it "when you get this message, do this thing." For example, this is for when the connection is opened:

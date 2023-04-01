@@ -259,10 +259,10 @@ wss.on('connection', async (ws, req) => {
   });
 });
 
+const port = process.argv.length > 2 ? process.argv[2] : 4000;
 
-
-//server listening to port 3000
-server.listen(3000, () => console.log('The server is running port 3000...'));
+//server listening to port 4000
+server.listen(4000, () => console.log('The server is running port 4000...'));
 
 function findGameFromArray(gameArray, gameName) {
     for (let i = 0; i < gameArray.length; i++) {

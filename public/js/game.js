@@ -31,7 +31,8 @@ let currUser = localStorage.getItem('currUser');
 const userToken = getCookieValue("userToken");
 
 window.addEventListener('load', () => {
-  const ws = new WebSocket('ws://localhost:3000/?userToken='+userToken);
+  const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
+  const ws = new WebSocket(`${protocol}://${window.location.host}/?userToken=`+userToken);
 
   ws.addEventListener('open', () => {
     

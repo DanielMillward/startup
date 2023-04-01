@@ -14,7 +14,7 @@ submitButton.addEventListener('click', (event) => {
   let startingStackTwo = startingStackTwoInput.value;
   console.log(gameName + otherPlayer + bb + startingStackOne + startingStackTwo);
   event.preventDefault(); // Needed for some reason
-  fetch('http://localhost:3000/api/addgame', {
+  fetch('/api/addgame', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'

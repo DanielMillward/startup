@@ -1,6 +1,6 @@
 let goodResponse = false;
 
-fetch('http://localhost:3000/api/getprofile', {
+fetch('/api/getprofile', {
   method: 'GET',
   headers: {
     'Cookie': document.cookie

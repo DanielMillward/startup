@@ -8,7 +8,7 @@ signupBtn.addEventListener('click', (event) => {
   username = usernameField.value;
   password = passwordField.value;
   event.preventDefault(); // Needed for some reason
-  fetch('http://localhost:3000/api/auth/create', {
+  fetch('/api/auth/create', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'

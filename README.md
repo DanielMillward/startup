@@ -15,6 +15,22 @@ Key features
 - User profile page has various statistics, such as games played and money won
 - Games can be shared with a URL
 
+## Simon React - Notes
+
+I think the primary thing I learned was that transitioning an app from just regular html/css/js to react is on par with just building it again from scratch with React in mind. I'd say its similar to test-driven development: if you don't have it in mind when you're writing it, then it's much harder to force it later on. 
+
+I also like the modular design of having an essentially completely separate app for the api calls, and the react app. It's essentially the same as having a 3rd party API, just without having to worry about CORS.
+
+I learned more about environment variables and how to use them. I didn't know it was possible to have them be programmatically updated under the hood. Knowing that, adding differences between development and production is as simple as
+
+```javascript
+let port = window.location.port;
+if (process.env.NODE_ENV !== 'production') {
+  port = 3000;
+}
+```
+
+
 ## Startup Service - Notes
 
 what you have learned using services, node.js, mongodb, authentication, and webSockets:

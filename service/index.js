@@ -115,6 +115,30 @@ apiRouter.get('/getprofile', async (req, res) => {
     res.status(401).send({ msg: 'Unauthorized' });
 });
 
+apiRouter.get('/user/:username', async (req, res) => {
+    console.log("Got user request...");
+    if (req.cookies.userToken) {
+        const user = await DB.getUserByToken(req.cookies.userToken);
+        if (user) {
+
+            userData = {
+                name: user.email,
+                createDate: user.createDate,
+                numGamesPlayed: user.numGamesPlayed,
+                totalMoneyWon: user.totalMoneyWon,
+                games: user.games
+            }
+            console.log("got user..." + user);
+            res.send(userData);
+            return;
+        } else {
+            console.log("no matching user found");
+            res.status(422).send({ msg: 'No user found' });
+            return;
+        }
+    }
+    res.status(401).send({ msg: 'Unauthorized' });
+});
 //add new game to user profile
 apiRouter.post('/addgame', async (req, res) => {
     if (req.cookies.userToken && req.body) {
@@ -261,7 +285,7 @@ wss.on('connection', async (ws, req) => {
 
 const port = process.argv.length > 2 ? process.argv[2] : 3000;
 
-//server listening to port 4000
+//server listening to port 3000
 server.listen(port, () => console.log('The server is running port 3000...'));
 
 function findGameFromArray(gameArray, gameName) {

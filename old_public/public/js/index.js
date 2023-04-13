@@ -45,7 +45,6 @@ async function getUser(email) {
   if (response.status === 200) {
     return response.json();
   }
-
   return null;
 }
 

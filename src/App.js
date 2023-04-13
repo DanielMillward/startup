@@ -3,9 +3,11 @@ import './App.css';
 import Header from './components/Header';
 
 function App() {
+  const userName = localStorage.getItem('userName');
+
   return (
     <div className="App">
-      <Header/>
+      <Header user={userName}/>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>

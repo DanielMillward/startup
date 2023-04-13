@@ -15,6 +15,14 @@ Key features
 - User profile page has various statistics, such as games played and money won
 - Games can be shared with a URL
 
+## Startup React - Notes
+
+For some reason it didn't fully click until now how the transition to production works:
+
+- For development, all requests have to go through the React dev server on port 3001. It then passes any unknown requests (including API calls) to the express server running on port 3000 by that proxy line. 
+
+- For production, all requests have to go through the express server. The express server then uses its routing capabilities to serve both api and regular get requests to the webpages. Those webpages then call fetch("/api/whatever"), and that is automatically the domain name!
+
 ## Simon React - Notes
 
 I think the primary thing I learned was that transitioning an app from just regular html/css/js to react is on par with just building it again from scratch with React in mind. I'd say its similar to test-driven development: if you don't have it in mind when you're writing it, then it's much harder to force it later on. 

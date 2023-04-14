@@ -10,6 +10,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
+    <meta http-equiv="Content-Security-Policy" content="style-src 'self' https://startup.coolpoker.com;"></meta>
       <App />
     </BrowserRouter>
   </React.StrictMode>

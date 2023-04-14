@@ -27,7 +27,7 @@ const NewGame = () => {
       if (response.status === 200) {
         // handle successful login
         console.log("Good game making");
-        window.location.href = '/profile';
+        window.location.href = '/game?hostUser=' + encodeURI(getCookieValue("userName")) + '&gameName=' + encodeURI(gameName);
       } else if (response.status === 422) {
         // handle successful login
         alert("Incomplete/incorrect form of data. Make sure that BB/stack sizes are numbers.");

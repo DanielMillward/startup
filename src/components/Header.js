@@ -5,7 +5,7 @@ function Header({ user }) {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(false);
   const location = useLocation();
-
+  
   useEffect(() => {
     async function fetchData() {
       try {

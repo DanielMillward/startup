@@ -14,7 +14,21 @@ app.use(express.json());
 app.use(express.static('public'));
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
-
+app.use((req, res, next) => {
+    res.set({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+        "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+        "Content-Security-Policy": "default-src *",
+        "X-Content-Security-Policy": "default-src *",
+        "X-WebKit-CSP": "default-src *"
+    })
+    next();
+});
+const cors = require('cors');
+app.use(cors({
+    origin: '*'
+}));
 // redirect to profile if already logged in
 const loggedInMiddleware = async (req, res, next) => {
     if (req.cookies.userToken) {

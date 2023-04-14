@@ -5,13 +5,16 @@ const bcrypt = require('bcrypt');
 const http = require('http');
 const WebSocket = require('ws');
 const url = require('url');
-
+const path = require('path');
 const app = express();
 const server = http.createServer(app);
 app.use(cookieParser());
 app.use(express.json());
 
 app.use(express.static('public'));
+
+
+
 var apiRouter = express.Router();
 app.use(`/api`, apiRouter);
 app.use((req, res, next) => {
@@ -297,9 +300,15 @@ wss.on('connection', async (ws, req) => {
   });
 });
 
-const port = process.argv.length > 2 ? process.argv[2] : 3000;
+
+
+app.get('/*', (req, res) => {
+    const indexHtmlPath = path.join(__dirname, 'public', 'index.html');
+    res.sendFile(indexHtmlPath);
+});
 
 //server listening to port 3000
+const port = process.argv.length > 2 ? process.argv[2] : 3000;
 server.listen(port, () => console.log('The server is running port 3000...'));
 
 function findGameFromArray(gameArray, gameName) {

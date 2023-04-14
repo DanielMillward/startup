@@ -14,7 +14,7 @@ function Header({ user }) {
           const data = await response.json();
           setUserData(data);
 
-          console.log(data);
+          //console.log(data);
         } else {
           throw new Error("Network response was not ok");
         }

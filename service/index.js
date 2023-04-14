@@ -199,10 +199,9 @@ wss.on('connection', async (ws, req) => {
     console.log('User is not authenticated - no token detected');
     ws.terminate();
   }
-
+  //ws.send("connection establed!");
   
   //send initial game state
-  
 
   
   //use userobject for info
@@ -268,7 +267,8 @@ wss.on('connection', async (ws, req) => {
             playerStack: playerStack,
             oppStack: oppStack,
             pot: currGame.pot,
-            currPlayer: currPlayer
+            currPlayer: currPlayer,
+            currRound: currGame.currRound
         });
         ws.send(message);
         console.log(`Sent message: ${message}`);

@@ -11,3 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.table-ellipse {
+  width: 700px;
+  height: 300px;
+  background-color: green;
+  border-radius: 50%;
+  position: relative;
+}
+
+.card-img {
+  display: block;
+  max-width: 100%;
+  max-height: 8em;
+}

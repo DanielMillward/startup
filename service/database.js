@@ -79,6 +79,13 @@ async function createUserGame(email, gameName, otherPlayer, bb, stackOne, stackT
   );
 }
 
+async function replaceUserGame(email, gameName, newGame) {
+  return await userCollection.updateOne(
+    { email: email, "games.gameName": gameName },
+    { $set: { "games.$": newGame } }
+  );
+}
+
 function getUserByToken(token) {
   return userCollection.findOne({ token: token });
 }
@@ -122,5 +129,6 @@ module.exports = {
   addScore,
   getHighScores,
   getUserGame,
-  createUserGame
+  createUserGame,
+  replaceUserGame
 };

@@ -230,6 +230,10 @@ wss.on('connection', async (ws, req) => {
         ws.send(`Not valid json`);
         return;
     }
+    if ((!msg.hasOwnProperty("request") || !msg.hasOwnProperty("data"))) {
+        ws.send(`Missing request or data field`);
+        return;
+    }
     if (!((msg.request === "update") || (msg.request === "getactions"))) {
         ws.send(`No request of that type found`);
         return;
@@ -238,17 +242,31 @@ wss.on('connection', async (ws, req) => {
     
     
     if (msg.request === "update") {
-        if (!msg.data.email || !msg.data.gameName || !msg.data.action.player || !msg.data.action.actionName || !msg.data.action.value) {
-            ws.send(`please give email and gameName`);
+        
+        if (!msg.data.email) {
+            ws.send(`please give email`);
+            return;
+        }
+        if (!msg.data.gameName) {
+            ws.send(`please give gameName`);
+            return;
+        }
+        if (!msg.data.action.player) {
+            ws.send(`please give player`);
+            return;
+        }
+        if (!msg.data.action.actionName) {
+            ws.send(`please give actionname`);
             return;
         }
         let currGame = await DB.getUserGame(msg.data.email, msg.data.gameName);
         currGame = findGameFromArray(currGame.games, msg.data.gameName);
-        if (!isValidAction(currGame, msg.data.action)) {
-            ws.send(`please give valid action`);
-            return;
-        }
-        let newGame = setAndGetUpdatedGame(currGame, msg.data.action);
+        //if (!isValidAction(currGame, msg.data.action)) {
+        //    ws.send(`please give valid action`);
+        //    return;
+        //}
+        console.log("CURRGAME - " + JSON.stringify(currGame));
+        let newGame = setAndGetUpdatedGame(msg.data.email, msg.data.gameName, currGame, msg.data.action);
         let gameDisplay = getGameDisplay(newGame);
         ws.send(gameDisplay);
         return;
@@ -279,6 +297,7 @@ wss.on('connection', async (ws, req) => {
             oppStack = currGame.stackThis;
         }
         let message = JSON.stringify({
+            
             "playerCards": [currGame.thisPlayerCards[0], currGame.thisPlayerCards[1]],
             "tableCards": [],
             playerStack: playerStack,
@@ -400,8 +419,58 @@ function getLegalActions(gameState) {
     return output;
 }
 
-function setAndGetUpdatedGame(currGame, action) {
-    currGame.betsThisRound.push(action);
+function setAndGetUpdatedGame(email, gameName, currGame, action) {
+    //!msg.data.action.player || !msg.data.action.actionName || !msg.data.action.value
+    /*
+    {"gameName":"ddd","thisPlayer":"df","otherPlayer":"sd","bb":"4","stackThis":220,
+    "stackOther":220,"startStackThis":220,"startStackOther":220,"currRound":"preflop",
+    "roundBetAmountThis":2,"roundBetAmountOther":"4","whoseTurn":1,"hasBeenABet":false,
+    "playerOne":"this","playerTwo":"other","betsThisRound":[],"pot":6,"thisPlayerCards":[17,23],
+    "otherPlayerCards":[16,4],"tableCards":[3,47,18,40,35]}
+    */
+    
+    if (action.actionName == "fold") {
+        if (currGame.whoseTurn == 1) {
+            currGame.stackOther += currGame.pot;
+        } else {
+            currGame.stackThis += currGame.pot;
+        }
+        if (currGame.playerOne == "this") {
+            currGame.stackThis -= currGame.bb / 2;
+            currGame.stackOther -= currGame.bb;
+        } else {
+            currGame.stackThis -= currGame.bb;
+            currGame.stackOther -= currGame.bb / 2;
+        }
+        currGame.pot = currGame.bb * 1.5;
+        currGame.currRound = "preflop";
+        currGame.whoseTurn = 1;
+    }
+    //currGame.currRound = getNextRound(currGame.currRound);
+    //currGame.whoseTurn = currGame.whoseTurn == 1 ? 2 : 1;
+    DB.replaceUserGame(email, gameName, currGame);
+    console.log("Updated game: " + JSON.stringify(currGame));
+    return currGame;
+
+}
+
+
+function getNextRound(currRound) {
+    if (currRound == "preflop") {
+        return "flop";
+    } else if (currRound == "flop") {
+        return "turn";
+    } else if (currRound == "turn") {
+        return "river";
+    } else if (currRound == "river") {
+        return "showdown";
+    } else if (currRound == "showdown") {
+        return "preflop";
+    }
+}
+
+/*
+currGame.betsThisRound.push(action);
     if (action.player == currGame.thisPlayer) {
         //if the acting player is thisplayer
         if (action.actionName != "fold" && action.actionName != "check") {
@@ -425,8 +494,23 @@ function setAndGetUpdatedGame(currGame, action) {
     if (numChecks >= 2 || containsCall) {
 
     }
-}
-
+*/
 function getGameDisplay(game) {
-
+    console.log("Sending data from this: " + JSON.stringify(game));
+    let currPlayerName = "";
+    if (game.whoseTurn == 1) {
+        currPlayerName = game.thisPlayer;
+    } else {
+        currPlayerName = game.otherPlayer;
+    }
+    let message = {
+        "playerCards": [game.thisPlayerCards[0], game.thisPlayerCards[1]],
+        "tableCards": [],
+        playerStack: game.stackThis,
+        oppStack: game.stackOther,
+        pot: game.pot,
+        currPlayer: currPlayerName,
+        currRound: game.currRound
+    }
+    return JSON.stringify(message);
 }

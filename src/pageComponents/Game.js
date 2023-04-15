@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import getCardName from '../helper/gameRules';
 import '../index.css'
 
+
 function Game() {
   const [message, setMessage] = useState("");
   const [oneStack, setOneStack] = useState("Loading...");
@@ -12,13 +13,21 @@ function Game() {
   const [toMove, setToMove] = useState("Loading...");
   const [round, setRound] = useState("Loading...");
 
+  const userName = getCookieValue("userName");
   const userToken = getCookieValue("userToken");
+
+  const [gameName, setGameName] = useState(null);
+  const [ws, setWs] = useState(null);
 
 
   useEffect(() => {
+    
+
     const urlParams = new URLSearchParams(window.location.search);
     const hostUser = urlParams.get('hostUser');
-    const gameName = urlParams.get('gameName');
+    const gameNametemp = urlParams.get('gameName');
+    console.log("gnt " +gameNametemp);
+    setGameName(gameNametemp);
     let port = window.location.port;
     if (process.env.NODE_ENV !== 'production') {
       port = 3000;
@@ -28,11 +37,12 @@ function Game() {
 
     socket.onopen = () => {
       console.log("WebSocket connection established.");
+      setWs(socket);
       let message = JSON.stringify({
         "request": "getactions",
         "data": {
           "email": hostUser,
-          "gameName": gameName
+          "gameName": gameNametemp
         }
       });
       setTimeout(
@@ -43,8 +53,9 @@ function Game() {
 
     socket.onmessage = (event) => {
       let message = event.data;
+      console.log(message);
       message = JSON.parse(message);
-      console.log(`Received message: ${message}`);
+      console.log(`Received message: ${JSON.stringify(message)}`);
 
       //only message we recieve here is for updating the display.
       /*
@@ -72,6 +83,30 @@ function Game() {
       socket.close();
     };
   }, []);
+
+  const handleClick = (buttonType) => {
+    if (ws) {
+      //!msg.data.email || !msg.data.gameName || !msg.data.action.player || !msg.data.action.actionName || !msg.data.action.value
+      let message = {
+        request: "update",
+        data: {
+          email: userName,
+          gameName: gameName,
+          action: {
+            player: userName,
+            actionName: buttonType
+          }
+
+        }
+      }
+      console.log("Message sending: " + message);
+      ws.send(JSON.stringify(message)); 
+    } else {
+      console.log("WebSocket connection not established yet.");
+    }
+  };
+
+
 
   return (
     <main id="maincontent">
@@ -137,22 +172,19 @@ function Game() {
             <div class="float-end">
               <div class="btn-group btn-group-justified">
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-primary btn-block" >Check</button>
+                    <button type="button" class="btn btn-primary btn-block" onClick={() => handleClick("check", null)}>Check</button>
                   </div>
                 <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-danger btn-block" id="foldbutton">Fold</button>
+                  <button type="button" class="btn btn-danger btn-block" id="foldbutton" onClick={() => handleClick("fold", null)}>Fold</button>
                 </div>
                 <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-info btn-block">Bet BB</button>
+                  <button type="button" class="btn btn-info btn-block" onClick={() => handleClick("betbb")}>Bet BB</button>
                 </div>
                 <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-success btn-block">Raise BB</button>
+                  <button type="button" class="btn btn-success btn-block" onClick={() => handleClick("raisebb")}>Raise BB</button>
                 </div>
                 <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-secondary btn-block">Call</button>
-                </div>
-                <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-dark btn-block">Next Round</button>
+                  <button type="button" class="btn btn-secondary btn-block" onClick={() => handleClick("call")}>Call</button>
                 </div>
               </div>
               

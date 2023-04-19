@@ -1,5 +1,5 @@
 const url = require('url');
-const DB = require('../database');
+const DB = require('./database');
 const Helper = require('./helpers');
 
 async function messageConn(ws, message, userObject) {

@@ -8,8 +8,8 @@ const url = require('url');
 const path = require('path');
 const app = express();
 const server = http.createServer(app);
-const startFuncs = require('./gamefuncs/startconn.js');
-const messageFuncs = require('./gamefuncs/messageconn.js');
+const startFuncs = require('./startconn.js');
+const messageFuncs = require('./messageconn.js');
 
 
 app.use(cookieParser());

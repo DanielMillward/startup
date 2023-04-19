@@ -1,5 +1,5 @@
 const url = require('url');
-const DB = require('../database');
+const DB = require('./database');
 
 async function startConn(ws, req, clients) {
     const queryObject = url.parse(req.url, true).query;

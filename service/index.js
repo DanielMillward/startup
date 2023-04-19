@@ -8,6 +8,10 @@ const url = require('url');
 const path = require('path');
 const app = express();
 const server = http.createServer(app);
+const startFuncs = require('./gamefuncs/startconn.js');
+const messageFuncs = require('./gamefuncs/messageconn.js');
+
+
 app.use(cookieParser());
 app.use(express.json());
 
@@ -191,127 +195,18 @@ apiRouter.post('/addgame', async (req, res) => {
 //Set up websocket bit
 //NOTE: Each connection is separate from one another. Meaning, you can save data from
 // the initial connection for later messages!
+
+
+const clients = {};
+
 const wss = new WebSocket.Server({ server });
 wss.on('connection', async (ws, req) => {
     //authenticate web socket request
-  const queryObject = url.parse(req.url, true).query;
-  console.log('WebSocket client connected');
-  if (!queryObject) {
-    console.log('User has no query params');
-    ws.terminate();
-    return;
-  }
-  const authToken = queryObject.userToken;
-  let userObject;
-  if (authToken) {
-    const user = await DB.getUserByToken(queryObject.userToken);
-    if (user) {
-        console.log('User is authenticated, user ' + user.email);
-        userObject = user;
-    } else {
-        console.log('User is not authenticated, had token though');
-        ws.terminate();
-    }
-  } else {
-    console.log('User is not authenticated - no token detected');
-    ws.terminate();
-  }
-  //ws.send("connection establed!");
-  
-  //send initial game state
-
+    let userObject = startFuncs.startConn(ws, req, clients);
   
   //use userobject for info
   ws.on('message', async (message) => {
-    console.log('got message!' + message);
-    try {
-        msg = JSON.parse(message);
-    } catch {
-        ws.send(`Not valid json`);
-        return;
-    }
-    if ((!msg.hasOwnProperty("request") || !msg.hasOwnProperty("data"))) {
-        ws.send(`Missing request or data field`);
-        return;
-    }
-    if (!((msg.request === "update") || (msg.request === "getactions"))) {
-        ws.send(`No request of that type found`);
-        return;
-    }
-    //update and broadcast game state (websocket) updates both game and users datas
-    
-    
-    if (msg.request === "update") {
-        
-        if (!msg.data.email) {
-            ws.send(`please give email`);
-            return;
-        }
-        if (!msg.data.gameName) {
-            ws.send(`please give gameName`);
-            return;
-        }
-        if (!msg.data.action.player) {
-            ws.send(`please give player`);
-            return;
-        }
-        if (!msg.data.action.actionName) {
-            ws.send(`please give actionname`);
-            return;
-        }
-        let currGame = await DB.getUserGame(msg.data.email, msg.data.gameName);
-        currGame = findGameFromArray(currGame.games, msg.data.gameName);
-        //if (!isValidAction(currGame, msg.data.action)) {
-        //    ws.send(`please give valid action`);
-        //    return;
-        //}
-        console.log("CURRGAME - " + JSON.stringify(currGame));
-        let newGame = setAndGetUpdatedGame(msg.data.email, msg.data.gameName, currGame, msg.data.action);
-        let gameDisplay = getGameDisplay(newGame);
-        ws.send(gameDisplay);
-        return;
-    }
-
-    //get legal actions (websocket)
-    if (msg.request === "getactions") {
-        if (!msg.data.email || !msg.data.gameName) {
-            ws.send(`please give email and gameName`);
-            return;
-        }
-        let currGame = await DB.getUserGame(msg.data.email, msg.data.gameName);
-        currGame = findGameFromArray(currGame.games, msg.data.gameName);
-        let playerStack = 0;
-        let oppStack = 0;
-        let currPlayer = "";
-        if ((currGame.whoseTurn == 1 && currGame.playerOne === "this") || (currGame.whoseTurn == 2 && currGame.playerTwo === "this")) {
-            currPlayer = currGame.thisPlayer;
-        } else {
-            currPlayer = currGame.otherPlayer;
-        }
-        if (userObject.email == currGame.thisPlayer) {
-            playerStack = currGame.stackThis;
-            oppStack = currGame.stackOther;
-            
-        } else {
-            playerStack = currGame.stackOther;
-            oppStack = currGame.stackThis;
-        }
-        let message = JSON.stringify({
-            
-            "playerCards": [currGame.thisPlayerCards[0], currGame.thisPlayerCards[1]],
-            "tableCards": [],
-            playerStack: playerStack,
-            oppStack: oppStack,
-            pot: currGame.pot,
-            currPlayer: currPlayer,
-            currRound: currGame.currRound
-        });
-        ws.send(message);
-        console.log(`Sent message: ${message}`);
-        return;
-    }
-
-    ws.send(`You said: ${message}`);
+    messageFuncs.messageConn(ws, message, userObject);
   });
 
   ws.on('close', () => {
@@ -330,14 +225,7 @@ app.get('/*', (req, res) => {
 const port = process.argv.length > 2 ? process.argv[2] : 3000;
 server.listen(port, () => console.log('The server is running port 3000...'));
 
-function findGameFromArray(gameArray, gameName) {
-    for (let i = 0; i < gameArray.length; i++) {
-        if (gameArray[i].gameName === gameName) {
-          return gameArray[i];
-        }
-      }
-      return undefined;
-}
+
 
 function isValidAction(gamestate, action) {
     //These are all viable bet amounts for any positive value of extra.
